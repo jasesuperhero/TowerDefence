@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="35" height="24" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="tmw_desert_spacing" tilewidth="32" tileheight="32" spacing="1" margin="1">
+  <image source="tmw_desert_spacing.png" width="265" height="199"/>
+ </tileset>
+ <tileset firstgid="49" name="meta_tiles" tilewidth="32" tileheight="32" spacing="1" margin="1">
+  <image source="meta_tiles.png" width="67" height="34"/>
+  <tile id="0">
+   <properties>
+    <property name="Collidable" value="True"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="Collectable" value="True"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Background" width="35" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzt1csKwjAQBdCqoPVZHwsfi2AFSxXUfJL//xXeQAJDcJIUNEbI4tBFMs1NOm1FURQiY8kE1lFjbeR9t45MTeRzab5zLs98LnH6RVhjPejDwDF/CCOtDKyx1zH2cGAyj2ECU7IHupc7LKDSllaNfFPnOvsaTmRv1ArWsGHGlTnJMgusKZksN52lSkSdQAaaZetBe9I311e7Y57RWT8j7p0z7D7ugta63i3Tu75vAe1J2RGtda1xgWtAll84Boh1H/WPeHiuIVk+dZ8s+ycvf9Ndng==
+  </data>
+ </layer>
+ <objectgroup name="Lairs" width="35" height="24">
+  <object name="Lair" x="0" y="352" width="32" height="32">
+   <properties>
+    <property name="Pleaceable" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="TowersPlaces" width="35" height="24">
+  <properties>
+   <property name="Placeable" value="True"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt0qENAAAIwDBu4v/j0GgChtbPLQLgrzxqYNPkST8DdAU3SwDJ
+  </data>
+ </layer>
+ <layer name="Walls" width="35" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzt0rENgDAMRFGvAVRAFbL/frkBjsZK5BT/S1daeoUjct3ao73J+5lh8WHxYfFh8e1kadqn9WoI/XZop3ZVQ2Kv38Xiw+LD4sPiW2EZFR4IxQ==
+  </data>
+ </layer>
+ <layer name="WallsPlaces" width="35" height="24">
+  <properties>
+   <property name="Placeable" value="True"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzrENAAAEADA3+f84q9WEpL2gEQAwl9uB5tIFgN8KoWYAZQ==
+  </data>
+ </layer>
+ <layer name="Road" width="35" height="24">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMFKBEQ6MT45UTKxZhNxHTb+OglEwCkbBKBgFuAAAkg0Hnw==
+  </data>
+ </layer>
+ <objectgroup name="Castle" width="35" height="24">
+  <object name="CastleCoord" x="1056" y="352" width="32" height="32"/>
+ </objectgroup>
+</map>
