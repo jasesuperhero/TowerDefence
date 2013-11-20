@@ -8,6 +8,9 @@
 
 #include "CAbstractProtectiveUnit.h"
 
+// Графичиские константы
+const int HealthFramesNumber = 21;
+
 #pragma mark - Конструкторы
 
 /*
@@ -15,8 +18,11 @@
  */
 CAbstractProtectiveUnit::CAbstractProtectiveUnit()
 {
+    _alive = true;
     _health = 10;
     _maxHealth = 100;
+    _deadAnimation = Animation::create();
+    _deadAnimation->retain();
 }
 
 #pragma mark - GET методы
@@ -42,7 +48,15 @@ int CAbstractProtectiveUnit::getMaxHealth()
  */
 bool CAbstractProtectiveUnit::getAlive()
 {
-    return alive;
+    return _alive;
+}
+
+/*
+ *  Возвращает анимацию смерти/разрушения
+ */
+Animation* CAbstractProtectiveUnit::getDeadAnimation()
+{
+    return _deadAnimation;
 }
 
 #pragma mark - SET методы
@@ -54,7 +68,7 @@ bool CAbstractProtectiveUnit::getAlive()
  */
 CAbstractProtectiveUnit& CAbstractProtectiveUnit::setAlive(bool new_alive)
 {
-    alive = new_alive;
+    _alive = new_alive;
     return *this;
 }
 
@@ -65,6 +79,7 @@ CAbstractProtectiveUnit& CAbstractProtectiveUnit::setAlive(bool new_alive)
  */
 CAbstractProtectiveUnit& CAbstractProtectiveUnit::setHealth(int new_health)
 {
+    if (new_health <= 0) throw "Health is less than 0";
     _health = new_health;
     return *this;
 }
@@ -74,11 +89,23 @@ CAbstractProtectiveUnit& CAbstractProtectiveUnit::setHealth(int new_health)
  */
 CAbstractProtectiveUnit& CAbstractProtectiveUnit::setMaxHealth(int new_max_health)
 {
+    if (new_max_health <= 0) throw "Max health is less than 0";
     _maxHealth = new_max_health;
     return *this;
 }
 
+/*
+ *  Устанавливает новую анимацию смерти/разрушения
+ */
+CAbstractProtectiveUnit& CAbstractProtectiveUnit::setDeadAnimation(Animation *new_dead_animation)
+{
+    if (!new_dead_animation) throw "Dead animation is NULL";
+    _deadAnimation = new_dead_animation;
+    return *this;
+}
+
 #pragma mark - Дополнительные методы
+#pragma mark - PUBLIC
 
 /*
  *  Юнит получает урон. Возвращает true, если юнит умер, и false, если еще жив
@@ -88,9 +115,16 @@ bool CAbstractProtectiveUnit::getDemaged(int damage)
     _health -= damage;
     if (_health > 0) {
         this->removeChild(_unitHealthSprite);
-        _unitHealthSprite = _unitHealthAnimation[int(_health * 21 / _maxHealth)];
+        _unitHealthSprite = getUnitHealthAnimation()[int(_health * HealthFramesNumber / _maxHealth)];
         this->addChild(_unitHealthSprite);
+        this->_sprite->runAction(TintBy::create(0.5, 0, 255, 255));
+        return false;
+    } else {
+        _alive = false;
+        this->stopAllActions();
+        this->_sprite->stopAllActions();
+        this->_sprite->runAction(Animate::create(_deadAnimation));
         return true;
-    } else return (_health > 0);
+    }
 }
 

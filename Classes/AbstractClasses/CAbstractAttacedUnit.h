@@ -40,7 +40,7 @@ public:
     CAbstractAttacedUnit& setAttacedUnit(CAbstractProtectiveUnit* new_attaced_unit);
     
     /** Дополнительные методы */
-    bool makeDamageTo(CAbstractProtectiveUnit* attaced_unit);
+    void makeDamageTo();
 };
 
 #endif /* defined(__HelloCpp__CAbstractAttacedUnit__) */

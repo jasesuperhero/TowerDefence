@@ -95,7 +95,7 @@ CTower* CLandscape::addTowerToMapWithPosition(Point tileCoord)
     if (_towersPlaces->getTileGIDAt(tileCoord) == _freeTileGid) {
         Size mapSize = this->getMapSize();
         int tileSize = (this->getTileSize()).width;
-        CTower* tower = CTower::create();
+        CTower* tower = CTower::createWithArrayOfEnemies(&_enemies);
     
         // Ставим занятость клетки
         _towersPlaces->setTileGID(_occupiedTileGid, tileCoord);

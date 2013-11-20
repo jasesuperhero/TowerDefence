@@ -10,6 +10,7 @@
 
 // Графические константы
 const int LabelTTFMarginY = 5;
+const int UnitSize = 32;
 const int TileSize = 32;
 
 #pragma mark - Конструкторы
@@ -20,8 +21,6 @@ const int TileSize = 32;
 CAbstractUnit::CAbstractUnit()
 {
     _name = (char*)"noname";
-    _unit_name= LabelTTF::create(_name, "Calibri", 12);
-    _unit_name->setVisible(false);
     _sprite = NULL;
     _unitHealthSprite = Sprite::create();
 }
@@ -64,6 +63,14 @@ Sprite& CAbstractUnit::getUnitHealthSprite()
     return *_unitHealthSprite;
 }
 
+/*
+ *  Возвращает спрайты индикатора здоровья
+ */
+std::vector<Sprite*> CAbstractUnit::getUnitHealthAnimation()
+{
+    return _unitHealthAnimation;
+}
+
 #pragma mark - SET методы
 
 /*
@@ -92,10 +99,14 @@ CAbstractUnit& CAbstractUnit::setSprite(const char* sprite_filename)
  */
 CAbstractUnit& CAbstractUnit::setSpriteWithRect(const char *sprite_filename, cocos2d::Rect rect)
 {
-    if (!_sprite) delete _sprite;
+    if (!_sprite) {
+        this->removeChild(_sprite);
+        delete _sprite;
+    }
     _sprite = Sprite::create();
     _sprite->initWithFile(sprite_filename, rect);
     _sprite->cocos2d::Node::setPosition(0, 0);
+    this->addChild(_sprite);
     return *this;
 }
 
@@ -148,23 +159,19 @@ bool CAbstractUnit::init()
     }
     
     // Устанавливаем размер слоя
-    this->setContentSize(Size(32, 32));
+    this->setContentSize(Size(UnitSize, UnitSize));
     
-    // настройка отображения имени объекта
-    if (!_unit_name->initWithString(_name, "Calibri", 12)) return false;
-    _unit_name->Node::setPosition(0, 16 + LabelTTFMarginY);
-    this->addChild(_unit_name, getChildrenCount());
-    
+    // Загрузка индикатора здоровья
     for (int i = 0; i < HEALTH_SIZE; i++) {
-        Sprite* frame = Sprite::create("bar_blue.png", Rect(32 * i, 0, 32, 4));
+        Sprite* frame = Sprite::create("bar_blue.png", Rect(UnitSize * i, 0, UnitSize, 4));
         _unitHealthAnimation.push_back(frame);
-        frame->Node::setPosition(0, 16 + LabelTTFMarginY);
+        frame->Node::setPosition(0, UnitSize / 2 + LabelTTFMarginY);
         frame->retain();
     }
     
     // настройка индикатора здоровья
     _unitHealthSprite = _unitHealthAnimation[_unitHealthAnimation.size() - 1];
-    this->addChild(_unitHealthSprite, getChildrenCount());
+    this->addChild(_unitHealthSprite, -1);
     
     // Отлавливание касания экрана
     auto listener = EventListenerTouch::create(Touch::DispatchMode::ONE_BY_ONE);

@@ -19,7 +19,9 @@ class CAbstractProtectiveUnit : public CAbstractUnit
 protected:
     int _health;
     int _maxHealth;
-    bool alive;
+    bool _alive;
+    
+    Animation* _deadAnimation;
     
 private:
     /** SET методы */
@@ -33,10 +35,12 @@ public:
     int getHealth();
     int getMaxHealth();
     bool getAlive();
+    Animation* getDeadAnimation();
     
     /** SET методы */
     CAbstractProtectiveUnit& setHealth(int new_health);
     CAbstractProtectiveUnit& setMaxHealth(int new_max_health);
+    CAbstractProtectiveUnit& setDeadAnimation(Animation* new_dead_animation);
     
     /** Дополнительные методы */
     bool getDemaged(int damage);

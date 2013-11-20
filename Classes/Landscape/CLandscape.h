@@ -35,7 +35,7 @@ private:
     TMXLayer*       _road;
     
     // Контейнеры для объектов
-    CContainer<CAbstractAttacedUnit*> _attacedBuildings;
+    vector<CAbstractAttacedUnit*> _attacedBuildings;
     vector<CWall*> _walls;
     vector<CAbstractEnemy*> _enemies;
     

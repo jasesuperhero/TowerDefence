@@ -102,14 +102,10 @@ bool CWall::init()
     
     // настройка спрайта
     setSpriteWithRect("tmw_desert_spacing.png", Rect(1, 4 * 32 + 5, 32, 32));
-    this->addChild(_sprite);
-    
-    // настройка отображения имени объекта
-    _unit_name->initWithString(_name, "Calibri", 12);
     
     // Создаем игровой цикл для объекта
     //this->getScheduler()->scheduleSelector(schedule_selector(CWall::update), this, 10, false);
-    this->getScheduler()->scheduleUpdateForTarget(this, 1, false);
+    this->getScheduler()->scheduleUpdateForTarget(this, this->getZOrder(), false);
     
     setVisible(false);
     

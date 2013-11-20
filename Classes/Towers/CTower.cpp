@@ -7,13 +7,17 @@
 //
 
 #include "CTower.h"
+#include "CFire.h"
 
 // Характеристики башни
-#define STANDART_DAMAGE 100
-#define STANDART_RATE 3
+#define STANDART_DAMAGE 1000
+#define STANDART_RATE 1
 #define STANDART_HEALTH 10000
-#define STANDART_DAMAGE_RADIUS 100
+#define STANDART_DAMAGE_RADIUS 150
 #define STANDART_NAME (char*)"Tower"
+#define STANDART_MAXLEVEL 3
+
+#define MAX_ANIMATION 
 
 #pragma mark - Конструкторы
 
@@ -22,7 +26,7 @@
  */
 CTower::CTower()
 {
-    _level = 1;
+    _level = 0;
     _experience = 0;
 }
 
@@ -44,6 +48,14 @@ int CTower::getExperience()
     return _experience;
 }
 
+/*
+ *  Возвращает вектор врагов
+ */
+vector<CAbstractEnemy*>* CTower::getEnemiesArray()
+{
+    return _enemiesArray;
+}
+
 #pragma mark - SET методы
 
 /*
@@ -51,6 +63,7 @@ int CTower::getExperience()
  */
 CTower& CTower::setLevel(int new_level)
 {
+    if (new_level < 0 || new_level > STANDART_MAXLEVEL) throw "New level for unit is less then 0 or > MAXLEVEL";
     _level = new_level;
     return *this;
 }
@@ -60,9 +73,35 @@ CTower& CTower::setLevel(int new_level)
  */
 CTower& CTower::setExperience(int new_experience)
 {
+    if (new_experience < 0) throw "New experience for unit is less then 0";
     _experience = new_experience;
     return *this;
 }
+
+/*
+ *  Устанавливает вектор врагов
+ */
+CTower& CTower::setEnemiesArray(vector<CAbstractEnemy*>* new_enemies_array)
+{
+    if (new_enemies_array) _enemiesArray = new_enemies_array;
+    else throw "New enemies array is empty";
+    return *this;
+}
+
+#pragma mark - Перегрузка методов
+
+/*
+ *  Метод для отрисовки OpenGL
+ */
+void CTower::draw()
+{
+    // отрисовка радиуса атаки башни
+    glLineWidth(2);
+    DrawPrimitives::setDrawColor4B(0, 178, 0, 70);
+    DrawPrimitives::drawSolidCircle(Point(0, 0), getDamageRadius(), CC_DEGREES_TO_RADIANS(90), 50);
+    CHECK_GL_ERROR_DEBUG();
+}
+
 
 #pragma mark - Инициализация
 
@@ -84,12 +123,18 @@ bool CTower::init()
     setDamageRadius(STANDART_DAMAGE_RADIUS);
     setRate(STANDART_RATE);
     
-    // настройка спрайта
-    setSpriteWithRect("turret.png", Rect(0, 0, 32, 32));
-    this->addChild(_sprite);
+    // Настройка спрайта
+    setSpriteWithRect("turret1.png", Rect(0, 0, 32, 32));
     
-    // настройка отображения имени объекта
-    _unit_name->initWithString(_name, "Calibri", 12);
+    // Загрузка анимации для башни
+    _towerAnimation.resize(STANDART_MAXLEVEL);
+    for (int i = 0; i < STANDART_MAXLEVEL; i++)
+        for (int j = 0; j < 8; j++) {
+            char str[30]; sprintf(str, "turret%d.png", i + 1);
+            Sprite* sprite = Sprite::create(str, Rect(j * 32, 0, 32, 32));
+            _towerAnimation[i].push_back(sprite);
+            sprite->retain();
+        }
     
     // Запуск основного цикла
     this->getScheduler()->scheduleUpdateForTarget(this, this->getZOrder(), false);
@@ -105,7 +150,7 @@ bool CTower::init()
 bool CTower::onTouchBegan(Touch *touch, Event *event)
 {
     if (isClicked(touch)) {
-        printf("Tower was touch\n");
+        levelUp();
         return true;
     }
     return false;
@@ -119,7 +164,39 @@ bool CTower::onTouchBegan(Touch *touch, Event *event)
  */
 void CTower::levelUp()
 {
-    _level++;
+    if (_level + 1 <= STANDART_MAXLEVEL)
+        _level++;
+}
+
+/*
+ *  Метод для выстрела пушки и обновления ее спрайта
+ */
+void CTower::fire()
+{
+    if (getAttacedUnit() && getAttacedUnit()->getAlive() &&
+        getPosition().getDistance(getAttacedUnit()->getPosition()) < getDamageRadius()) {
+        int angle = floor(CC_RADIANS_TO_DEGREES(atan2l(getAttacedUnit()->getPositionX() - getPositionX(),
+                                                   getAttacedUnit()->getPositionY() - getPositionY())) / 22.5) + 8;
+        angle = floor((float)angle / 2);
+        this->removeChild(_sprite);
+        _sprite = _towerAnimation[_level][angle];
+        this->addChild(_sprite);
+    
+        CFire* fire = CFire::create();
+        fire->cocos2d::Node::setPosition(this->getPosition());
+        FiniteTimeAction* sequence = Sequence::create(MoveTo::create(0.3, getAttacedUnit()->getPosition()),
+                                                      CallFunc::create(this, callfunc_selector(CAbstractAttacedUnit::makeDamageTo)),
+                                                      CallFunc::create(fire, callfunc_selector(Node::removeFromParent)),
+                                                      NULL);
+        this->getParent()->addChild(fire, 1);
+        fire->runAction(sequence);
+    
+        sequence = Sequence::create(DelayTime::create(getRate()),
+                                    CallFunc::create(this, callfunc_selector(CTower::fire)),
+                                    NULL);
+        sequence->retain();
+        this->runAction(sequence);
+    } else setAttacedUnit(NULL);
 }
 
 /*
@@ -127,5 +204,21 @@ void CTower::levelUp()
  */
 void CTower::update(float dt)
 {
-    
+    if (!getAttacedUnit())
+        for (int i = 0; i < _enemiesArray->size(); i++)
+            if (getPosition().getDistance((*_enemiesArray)[i]->getPosition()) < getDamageRadius()) {
+                setAttacedUnit((*_enemiesArray)[i]);
+                fire();
+            }
+}
+
+#pragma mark - PUBLIC
+/*
+ *  Создание юнита с указателем на вектор всех юнитов на карте
+ */
+CTower* CTower::createWithArrayOfEnemies(vector<CAbstractEnemy*> *enemies)
+{
+    CTower* tower = create();
+    tower->setEnemiesArray(enemies);
+    return tower;
 }

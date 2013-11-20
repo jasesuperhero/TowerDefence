@@ -15,19 +15,19 @@
 #include <cocos2d.h>
 
 using namespace cocos2d;
+using namespace std;
 
 class CAbstractUnit : public Layer {
 protected:
     char*           _name;
     Sprite*         _sprite;
-    LabelTTF*       _unit_name;
     Sprite*         _unitHealthSprite;
     
     /** Дополнительные методы */
     bool isClicked(Touch* touch);
     
-//private:
-    std::vector<Sprite*> _unitHealthAnimation;
+private:
+    vector<Sprite*> _unitHealthAnimation;
 
 public:
     /** Конструкторы */
@@ -40,6 +40,7 @@ public:
     char* getName();
     Sprite& getSprite();
     Sprite& getUnitHealthSprite();
+    vector<Sprite*> getUnitHealthAnimation();
     
     /** SET методы */
     CAbstractUnit& setName(char* new_name);

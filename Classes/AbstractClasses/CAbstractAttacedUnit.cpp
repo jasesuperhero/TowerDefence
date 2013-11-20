@@ -18,6 +18,7 @@ CAbstractAttacedUnit::CAbstractAttacedUnit()
     _maxDamage = 100;
     _rate = 10;
     _damageRadius = 10;
+    _attacedUnit = NULL;
 }
 
 #pragma mark - GET методы
@@ -61,8 +62,8 @@ CAbstractProtectiveUnit* CAbstractAttacedUnit::getAttacedUnit()
  */
 CAbstractAttacedUnit& CAbstractAttacedUnit::setMaxDamage(int new_max_damage)
 {
-    if (new_max_damage > 0)
-        _maxDamage = new_max_damage;
+    if (new_max_damage < 0) throw "New damage is less than 0";
+    _maxDamage = new_max_damage;
     return *this;
 }
 
@@ -71,8 +72,8 @@ CAbstractAttacedUnit& CAbstractAttacedUnit::setMaxDamage(int new_max_damage)
  */
 CAbstractAttacedUnit& CAbstractAttacedUnit::setRate(int new_rate)
 {
-    if (new_rate > 0)
-        _rate = new_rate;
+    if (new_rate < 0) throw "New rate is less than 0";
+    _rate = new_rate;
     return *this;
 }
 
@@ -81,8 +82,8 @@ CAbstractAttacedUnit& CAbstractAttacedUnit::setRate(int new_rate)
  */
 CAbstractAttacedUnit& CAbstractAttacedUnit::setDamageRadius(int new_damage_radius)
 {
-    if (new_damage_radius > 0)
-        _damageRadius = new_damage_radius;
+    if (new_damage_radius < 0) throw "New damage radius is less than 0";
+    _damageRadius = new_damage_radius;
     return *this;
 }
 
@@ -91,8 +92,7 @@ CAbstractAttacedUnit& CAbstractAttacedUnit::setDamageRadius(int new_damage_radiu
  */
 CAbstractAttacedUnit& CAbstractAttacedUnit::setAttacedUnit(CAbstractProtectiveUnit *new_attaced_unit)
 {
-    if (new_attaced_unit != NULL)
-        _attacedUnit = new_attaced_unit;
+    _attacedUnit = new_attaced_unit;
     return *this;
 }
 
@@ -101,10 +101,10 @@ CAbstractAttacedUnit& CAbstractAttacedUnit::setAttacedUnit(CAbstractProtectiveUn
 /*
  *  Наносит урон противнику. Возвращает true, если противник погиб от удара и false, если все еще жив
  */
-bool CAbstractAttacedUnit::makeDamageTo(CAbstractProtectiveUnit *attaced_unit)
+void CAbstractAttacedUnit::makeDamageTo()
 {
-    if(attaced_unit->getDemaged(_maxDamage)) {
-        printf("Unit %s was killed by %s", attaced_unit->getName(), this->getName());
-        return true;
-    } else return false;
+    if (getPosition().getDistance(_attacedUnit->getPosition()) < _damageRadius) {
+        if(_attacedUnit->getDemaged(_maxDamage))
+            printf("Unit %s was killed by %s", _attacedUnit->getName(), this->getName());
+    } else setAttacedUnit(NULL);
 }

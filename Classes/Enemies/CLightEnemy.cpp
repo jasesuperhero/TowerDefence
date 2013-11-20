@@ -22,15 +22,17 @@
  */
 void CLightEnemy::update(float dt)
 {
-    if (!_road->getPath() || !_road->checkPath())
-        getRoad()->findPath(getTiledCoord());
+    if (getAlive()) {
+        if (!_road->getPath() || !_road->checkPath())
+            getRoad()->findPath(getTiledCoord());
     
-    if (getRoad()->getPath() && !getRoad()->getPath()->empty() && !getInMoving())
-        makeMove();
+        if (getRoad()->getPath() && !getRoad()->getPath()->empty() && !getInMoving())
+            makeMove();
+    }
 }
 
 /*
- *  Передвижение TODO: Доделать метод передвижения
+ *  Передвижение
  */
 void CLightEnemy::makeMove()
 {
@@ -48,25 +50,14 @@ void CLightEnemy::makeMove()
         
         this->_sprite->stopAllActions();
         
-        if (dir_point.x - getPosition().x > 0) {
-            //_moveRight->retain();
+        if (dir_point.x - getPosition().x > 0)
             this->_sprite->runAction(_moveRight);
-        }
-        
-        if (dir_point.x - getPosition().x < 0) {
-            //_moveLeft->retain();
+        if (dir_point.x - getPosition().x < 0)
             this->_sprite->runAction(_moveLeft);
-        }
-        
-        if (dir_point.y - getPosition().y > 0) {
-            //_moveUp->retain();
+        if (dir_point.y - getPosition().y > 0)
             this->_sprite->runAction(_moveUp);
-        }
-        
-        if (dir_point.y - getPosition().y < 0) {
-            //_moveDown->retain();
+        if (dir_point.y - getPosition().y < 0)
             this->_sprite->runAction(_moveDown);
-        }
         
         setInMoving(true);
     } else setInMoving(false);
@@ -95,10 +86,6 @@ bool CLightEnemy::init()
     
     // настройка спрайта
     setSpriteWithRect("light_unit.png", Rect(0, 0, 32, 32));
-    this->addChild(_sprite);
-    
-    // настройка отображения имени объекта
-    _unit_name->initWithString(_name, "Calibri", 12);
     
     // Отлавливание касания экрана
     auto listener = EventListenerTouch::create(Touch::DispatchMode::ONE_BY_ONE);
@@ -108,16 +95,23 @@ bool CLightEnemy::init()
     this->setTouchEnabled(true);
     
     // Запуск основного цикла
-    this->getScheduler()->scheduleUpdateForTarget(this, 1, false);
+    this->getScheduler()->scheduleUpdateForTarget(this, this->getZOrder(), false);
     
     // Устанавливаем размер слоя
     this->setContentSize(Size(32, 32));
     
-    // Загрузка фреймов для анимации
+    // Загрузка фреймов для анимации движения
     _moveUp = CAbstractEnemy::createMoveAnimateAction("light_unit.png", Rect(0, 4 * 32, 32, 32), 6);
     _moveDown = CAbstractEnemy::createMoveAnimateAction("light_unit.png", Rect(0, 0, 32, 32), 6);
     _moveLeft = CAbstractEnemy::createMoveAnimateAction("light_unit.png", Rect(0, 2 * 32, 32, 32), 6);
     _moveRight = CAbstractEnemy::createMoveAnimateAction("light_unit.png", Rect(0, 6 * 32, 32, 32), 6);
+    
+    // Загрузка анимации смерти
+    for (int i = 2; i < 8; i++) {
+        SpriteFrame* frame = SpriteFrame::create("fx_enemydie_tiny_32.png", Rect(i * 32, 0, 32, 32));
+        getDeadAnimation()->addSpriteFrame(frame);
+    }
+    getDeadAnimation()->setDelayPerUnit(0.2);
     
     return true;
 }
@@ -142,7 +136,7 @@ bool CLightEnemy::onTouchBegan(Touch *touch, Event *event)
 {
     if (isClicked(touch)) {
         printf("%s was touch\n", this->getName());
-        getDemaged(1000);
+        getDemaged(10000);
         return true;
     }
     return false;

@@ -15,8 +15,6 @@
 #include "CAbstractAttacedUnit.h"
 #include "CRoad.h"
 
-using namespace std;
-
 class CAbstractEnemy : public CAbstractAttacedUnit
 {
 protected:
