@@ -7,6 +7,7 @@
 //
 
 #include "CAbstractUnit.h"
+#include "CLandscape.h"
 
 // Графические константы
 const int LabelTTFMarginY = 5;
@@ -23,6 +24,7 @@ CAbstractUnit::CAbstractUnit()
     _name = (char*)"noname";
     _sprite = NULL;
     _unitHealthSprite = Sprite::create();
+    _landscape = NULL;
 }
 
 #pragma mark - Деструктор
@@ -45,6 +47,14 @@ CAbstractUnit::~CAbstractUnit()
 char* CAbstractUnit::getName()
 {
     return this->_name;
+}
+
+/*
+ *  Возвращает указатель на ландшафт, на котором расположен юнит
+ */
+CLandscape* CAbstractUnit::getLandscape()
+{
+    return _landscape;
 }
 
 /*
@@ -79,6 +89,16 @@ std::vector<Sprite*> CAbstractUnit::getUnitHealthAnimation()
 CAbstractUnit& CAbstractUnit::setName(char *new_name)
 {
     _name = new_name;
+    return *this;
+}
+
+/*
+ *  Устанавливает ландшафт для объекта
+ */
+CAbstractUnit& CAbstractUnit::setLandscape(CLandscape *new_landscape)
+{
+    if (!new_landscape) throw "Landscape is NULL ptr";
+    _landscape = new_landscape;
     return *this;
 }
 
@@ -134,7 +154,7 @@ bool CAbstractUnit::isClicked(cocos2d::Touch *touch)
 Point CAbstractUnit::getTiledCoord()
 {
     return Point((this->getPositionX() - TileSize / 2) / TileSize,
-                 (this->getPositionY() - TileSize / 2) / TileSize - 1);
+                 this->getLandscape()->getMapSize().height - (this->getPositionY() - TileSize / 2) / TileSize - 1);
 }
 
 /*
@@ -144,6 +164,23 @@ Point CAbstractUnit::getPositionWithTiledCoord(Point tileCoord)
 {
     return Point(tileCoord.x * TileSize + TileSize / 2,
                  (this->getParent()->getContentSize().height / 32 - tileCoord.y - 1) * TileSize + TileSize / 2);
+}
+
+/*
+ *  Создание анимации
+ */
+Animate* CAbstractUnit::createAnimate(const char *filename, Rect startFrame, int count, float delayTime)
+{
+    Animation* animation = Animation::create();
+    for(int i = 0; i < count; i++) {
+        SpriteFrame* frame = SpriteFrame::create(filename, startFrame);
+        startFrame.origin.x += startFrame.size.width;
+        animation->addSpriteFrame(frame);
+    }
+    animation->setDelayPerUnit(delayTime);
+    Animate* new_animate = Animate::create(animation);
+    new_animate->retain();
+    return new_animate;
 }
 
 #pragma mark - Инициализация
@@ -174,11 +211,11 @@ bool CAbstractUnit::init()
     this->addChild(_unitHealthSprite, -1);
     
     // Отлавливание касания экрана
-    auto listener = EventListenerTouch::create(Touch::DispatchMode::ONE_BY_ONE);
+    /*auto listener = EventListenerTouch::create(Touch::DispatchMode::ONE_BY_ONE);
     listener->setSwallowTouches(true);
     listener->onTouchBegan = CC_CALLBACK_2(CAbstractUnit::onTouchBegan, this);
     EventDispatcher::getInstance()->addEventListenerWithSceneGraphPriority(listener, this);
-    this->setTouchEnabled(true);
+    this->setTouchEnabled(true);*/
     
     return true;
 }

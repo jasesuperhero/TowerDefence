@@ -67,6 +67,10 @@
 		6572F7041825820000A8DE68 /* level1.tmx in Resources */ = {isa = PBXBuildFile; fileRef = 6572F7011825820000A8DE68 /* level1.tmx */; };
 		6572F7051825820000A8DE68 /* terrain_atlas.png in Resources */ = {isa = PBXBuildFile; fileRef = 6572F7021825820000A8DE68 /* terrain_atlas.png */; };
 		6572F7061825820000A8DE68 /* terrain_atlas.png in Resources */ = {isa = PBXBuildFile; fileRef = 6572F7021825820000A8DE68 /* terrain_atlas.png */; };
+		65877F741842701F00A1BF88 /* CLair.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65877F721842701F00A1BF88 /* CLair.cpp */; };
+		65877F751842701F00A1BF88 /* CLair.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65877F721842701F00A1BF88 /* CLair.cpp */; };
+		65877F791843442600A1BF88 /* lair.png in Resources */ = {isa = PBXBuildFile; fileRef = 65877F781843442600A1BF88 /* lair.png */; };
+		65877F7A1843442600A1BF88 /* lair.png in Resources */ = {isa = PBXBuildFile; fileRef = 65877F781843442600A1BF88 /* lair.png */; };
 		65A1173E182BC1C800D67C2E /* CAbstractEnemy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65A1173C182BC1C800D67C2E /* CAbstractEnemy.cpp */; };
 		65A1173F182BC1C800D67C2E /* CAbstractEnemy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65A1173C182BC1C800D67C2E /* CAbstractEnemy.cpp */; };
 		65B1C61F182AFED8009D270E /* CAbstractAttacedUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65B1C61D182AFED8009D270E /* CAbstractAttacedUnit.cpp */; };
@@ -344,10 +348,13 @@
 		6545A2E6182C2C88001AFD6E /* CLandscape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLandscape.h; sourceTree = "<group>"; };
 		6545A2F3182C5019001AFD6E /* CLightEnemy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CLightEnemy.cpp; sourceTree = "<group>"; };
 		6545A2F4182C5019001AFD6E /* CLightEnemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLightEnemy.h; sourceTree = "<group>"; };
-		6562B7A918398B9800311E74 /* СContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "СContainer.h"; sourceTree = "<group>"; };
 		656FF4E3183A29BB00E44BA0 /* bar_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bar_blue.png; sourceTree = "<group>"; };
 		6572F7011825820000A8DE68 /* level1.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = level1.tmx; sourceTree = "<group>"; };
 		6572F7021825820000A8DE68 /* terrain_atlas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = terrain_atlas.png; sourceTree = "<group>"; };
+		65877F721842701F00A1BF88 /* CLair.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CLair.cpp; sourceTree = "<group>"; };
+		65877F731842701F00A1BF88 /* CLair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLair.h; sourceTree = "<group>"; };
+		65877F781843442600A1BF88 /* lair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lair.png; sourceTree = "<group>"; };
+		65877F861843EFF700A1BF88 /* СContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "СContainer.h"; sourceTree = "<group>"; };
 		65A1173C182BC1C800D67C2E /* CAbstractEnemy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAbstractEnemy.cpp; sourceTree = "<group>"; };
 		65A1173D182BC1C800D67C2E /* CAbstractEnemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAbstractEnemy.h; sourceTree = "<group>"; };
 		65B1C61D182AFED8009D270E /* CAbstractAttacedUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAbstractAttacedUnit.cpp; sourceTree = "<group>"; };
@@ -595,7 +602,7 @@
 		6532261C18397900001003A9 /* Containers */ = {
 			isa = PBXGroup;
 			children = (
-				6562B7A918398B9800311E74 /* СContainer.h */,
+				65877F861843EFF700A1BF88 /* СContainer.h */,
 			);
 			name = Containers;
 			path = ../Classes/Containers;
@@ -608,6 +615,15 @@
 			);
 			name = Interface;
 			path = sprites/Interface;
+			sourceTree = "<group>";
+		};
+		65877F771843442600A1BF88 /* buildings */ = {
+			isa = PBXGroup;
+			children = (
+				65877F781843442600A1BF88 /* lair.png */,
+			);
+			name = buildings;
+			path = sprites/buildings;
 			sourceTree = "<group>";
 		};
 		65A11730182B992200D67C2E /* sprites */ = {
@@ -774,6 +790,8 @@
 				65EABA9F1829631900D4E60E /* CWall.h */,
 				6508BFBE182EC55A00C5846B /* CCastle.cpp */,
 				6508BFBF182EC55A00C5846B /* CCastle.h */,
+				65877F721842701F00A1BF88 /* CLair.cpp */,
+				65877F731842701F00A1BF88 /* CLair.h */,
 			);
 			name = BuildingUnits;
 			path = ../Classes/BuildingUnits;
@@ -782,6 +800,7 @@
 		78C7DDAA14EBA5050085D0C2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				65877F771843442600A1BF88 /* buildings */,
 				65D7B563183BFF9E00510C4F /* effects */,
 				656FF4E2183A29BB00E44BA0 /* Interface */,
 				65A11730182B992200D67C2E /* sprites */,
@@ -996,6 +1015,7 @@
 				6508BFC7182EEFDA00C5846B /* light_unit.png in Resources */,
 				50EF629917ECD46A001EB2F8 /* Icon-100.png in Resources */,
 				5087E78317EB970100C73F5D /* Icon-152.png in Resources */,
+				65877F791843442600A1BF88 /* lair.png in Resources */,
 				65D6ECE918223E7700FFDD0C /* tmw_desert_spacing.png in Resources */,
 				5087E77D17EB970100C73F5D /* Default-568h@2x.png in Resources */,
 				6572F7051825820000A8DE68 /* terrain_atlas.png in Resources */,
@@ -1041,6 +1061,7 @@
 				65D6ECE818223E7700FFDD0C /* TileMap.tmx in Resources */,
 				6572F7041825820000A8DE68 /* level1.tmx in Resources */,
 				65D6ECE018223E7700FFDD0C /* move.caf in Resources */,
+				65877F7A1843442600A1BF88 /* lair.png in Resources */,
 				65D7B562183BA31800510C4F /* turret3.png in Resources */,
 				65D6ECE218223E7700FFDD0C /* pickup.caf in Resources */,
 				503AE0F817EB97AB00D1A890 /* Icon.icns in Resources */,
@@ -1062,6 +1083,7 @@
 				65D6ED001825129E00FFDD0C /* CGameplayScene.cpp in Sources */,
 				65EABA8E182944C400D4E60E /* CAbstractProtectiveUnit.cpp in Sources */,
 				6545A2F5182C5019001AFD6E /* CLightEnemy.cpp in Sources */,
+				65877F741842701F00A1BF88 /* CLair.cpp in Sources */,
 				65D6ED04182512B400FFDD0C /* CGameplayLayer.cpp in Sources */,
 				65A1173E182BC1C800D67C2E /* CAbstractEnemy.cpp in Sources */,
 				65B1C61F182AFED8009D270E /* CAbstractAttacedUnit.cpp in Sources */,
@@ -1086,6 +1108,7 @@
 				65D6ED05182512B400FFDD0C /* CGameplayLayer.cpp in Sources */,
 				6545A2E8182C2C88001AFD6E /* CLandscape.cpp in Sources */,
 				65D7B551183B433800510C4F /* AppDelegate.cpp in Sources */,
+				65877F751842701F00A1BF88 /* CLair.cpp in Sources */,
 				6545A2F6182C5019001AFD6E /* CLightEnemy.cpp in Sources */,
 				65B1C62A182B05FF009D270E /* CTower.cpp in Sources */,
 				65EABA8F182944C400D4E60E /* CAbstractProtectiveUnit.cpp in Sources */,

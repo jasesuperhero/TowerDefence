@@ -17,6 +17,7 @@ CAbstractEnemy::CAbstractEnemy()
 {
     _moveSpeed = 10;
     _road = NULL;
+    setAlive(false);
 }
 
 #pragma mark - GET методы
@@ -43,6 +44,14 @@ bool CAbstractEnemy::getInMoving()
 CRoad* CAbstractEnemy::getRoad()
 {
     return _road;
+}
+
+/*
+ *  Возвращает количество опыта за юнита
+ */
+int CAbstractEnemy::getExp()
+{
+    return _exp;
 }
 
 /*
@@ -105,7 +114,18 @@ CAbstractEnemy& CAbstractEnemy::setInMoving(bool new_in_moving)
  */
 CAbstractEnemy& CAbstractEnemy::setRoad(CRoad *new_road)
 {
+    if (new_road == NULL) throw "New road is NULL ptr";
     _road = new_road;
+    return *this;
+}
+
+/*
+ *  Установка нового значения опыта за юнита
+ */
+CAbstractEnemy& CAbstractEnemy::setExp(int new_exp)
+{
+    if (new_exp <= 0) throw "New exp is 0 or less than 0";
+    _exp = new_exp;
     return *this;
 }
 
@@ -149,20 +169,37 @@ CAbstractEnemy& CAbstractEnemy::setMoveRightAction(RepeatForever *new_move_right
     return *this;
 }
 
+#pragma mark - Дополнительные методы
+
 /*
- *  Создание action анимации по файлу, начальной области и количеству фреймов
+ *  Передвижение
  */
-RepeatForever* CAbstractEnemy::createMoveAnimateAction(const char *filename, cocos2d::Rect startRect, int count)
+void CAbstractEnemy::makeMove()
 {
-    Animation* animation = Animation::create();
-    for(int i = 0; i < count; i++) {
-        SpriteFrame* frame = SpriteFrame::create(filename, startRect);
-        startRect.origin.x += startRect.size.height;
-        animation->addSpriteFrame(frame);
-    }
-    animation->setDelayPerUnit(0.1);
-    RepeatForever* moveAnimate = RepeatForever::create(Animate::create(animation));
-    moveAnimate->retain();
-    return moveAnimate;
+    CRoad* road = getRoad();
+    if (road->checkPath() && getAlive()) {
+        Point dir_point = getPositionWithTiledCoord((*road->getPath())[road->getPath()->size() - 1]);
+        printf("Next position for unit is X = %f Y = %f \n", dir_point.x, dir_point.y);
+        road->getPath()->pop_back();
+        
+        FiniteTimeAction* sequence = Sequence::create(MoveTo::create(1 / getMoveSpeed(), dir_point),
+                                                      CallFunc::create(this, callfunc_selector(CAbstractEnemy::makeMove)),
+                                                      NULL);
+        sequence->retain();
+        this->runAction(sequence);
+        
+        this->_sprite->stopAllActions();
+        
+        if (dir_point.x - getPosition().x > 0)
+            this->_sprite->runAction(_moveRight);
+        if (dir_point.x - getPosition().x < 0)
+            this->_sprite->runAction(_moveLeft);
+        if (dir_point.y - getPosition().y > 0)
+            this->_sprite->runAction(_moveUp);
+        if (dir_point.y - getPosition().y < 0)
+            this->_sprite->runAction(_moveDown);
+        
+        setInMoving(true);
+    } else setInMoving(false);
 }
 

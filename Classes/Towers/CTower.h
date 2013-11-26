@@ -29,7 +29,9 @@ private:
     
     /** Дополнительные методы */
     void levelUp();
+    void addExperience(int exp);
     void fire();
+    void isKillEnemy();
     virtual void update(float dt);
     
 public:

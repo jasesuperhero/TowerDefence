@@ -17,7 +17,7 @@
 #define STANDART_NAME (char*)"Tower"
 #define STANDART_MAXLEVEL 3
 
-#define MAX_ANIMATION 
+#define MAX_ANIMATION 8
 
 #pragma mark - Конструкторы
 
@@ -129,7 +129,7 @@ bool CTower::init()
     // Загрузка анимации для башни
     _towerAnimation.resize(STANDART_MAXLEVEL);
     for (int i = 0; i < STANDART_MAXLEVEL; i++)
-        for (int j = 0; j < 8; j++) {
+        for (int j = 0; j < MAX_ANIMATION; j++) {
             char str[30]; sprintf(str, "turret%d.png", i + 1);
             Sprite* sprite = Sprite::create(str, Rect(j * 32, 0, 32, 32));
             _towerAnimation[i].push_back(sprite);
@@ -164,8 +164,18 @@ bool CTower::onTouchBegan(Touch *touch, Event *event)
  */
 void CTower::levelUp()
 {
-    if (_level + 1 <= STANDART_MAXLEVEL)
+    if (_level + 1 < STANDART_MAXLEVEL)
         _level++;
+    _experience = 0;
+}
+
+/*
+ *  Добавление опыта за башню
+ */
+void CTower::addExperience(int exp)
+{
+    _experience += exp;
+    if (_experience > 1000) levelUp();
 }
 
 /*
@@ -185,7 +195,7 @@ void CTower::fire()
         CFire* fire = CFire::create();
         fire->cocos2d::Node::setPosition(this->getPosition());
         FiniteTimeAction* sequence = Sequence::create(MoveTo::create(0.3, getAttacedUnit()->getPosition()),
-                                                      CallFunc::create(this, callfunc_selector(CAbstractAttacedUnit::makeDamageTo)),
+                                                      CallFunc::create(this, callfunc_selector(CTower::isKillEnemy)),
                                                       CallFunc::create(fire, callfunc_selector(Node::removeFromParent)),
                                                       NULL);
         this->getParent()->addChild(fire, 1);
@@ -200,6 +210,15 @@ void CTower::fire()
 }
 
 /*
+ *  Убит ли атакуемый юнит
+ */
+void CTower::isKillEnemy()
+{
+    CAbstractEnemy* enemy = dynamic_cast<CAbstractEnemy*>(getAttacedUnit());
+    if (makeDamageTo()) addExperience(enemy->getExp());
+}
+
+/*
  *  Обновление объекта со временем
  */
 void CTower::update(float dt)
@@ -209,6 +228,7 @@ void CTower::update(float dt)
             if (getPosition().getDistance((*_enemiesArray)[i]->getPosition()) < getDamageRadius()) {
                 setAttacedUnit((*_enemiesArray)[i]);
                 fire();
+                return;
             }
 }
 

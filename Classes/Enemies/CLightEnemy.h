@@ -9,6 +9,8 @@
 #ifndef __HelloCpp__CLightEnemy__
 #define __HelloCpp__CLightEnemy__
 
+//class CLandscape;
+
 #include <cocos2d.h>
 #include "CAbstractEnemy.h"
 
@@ -19,12 +21,9 @@ private:
     virtual void update(float dt);
     
 public:
-    /** Дополнительные методы */
-    void makeMove();
-    
     /** Инициализация */
     virtual bool init();
-    static CLightEnemy* createEnemyWithRoadAndCastleCoord(TMXLayer* road, Point castleCoord);
+    static CLightEnemy* createEnemy(CLandscape* landscape);
     
     /** Пользовательский ввод */
     bool onTouchBegan(Touch *touch, Event *event);

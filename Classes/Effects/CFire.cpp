@@ -23,7 +23,6 @@ CFire::CFire()
     _fireAnimation = Animation::create();
 }
 
-
 #pragma mark - Инициализация
 
 /*
@@ -41,9 +40,9 @@ bool CFire::init()
         _fireAnimation->addSpriteFrame(frame);
     }
     
-    _fireAnimation->setDelayPerUnit(0.3);
-    RepeatForever* moveAnimate = RepeatForever::create(Animate::create(_fireAnimation));
-    this->runAction(moveAnimate);
+    _fireAnimation->setDelayPerUnit(0.1);
+    RepeatForever* fireAnimate = RepeatForever::create(Animate::create(_fireAnimation));
+    this->runAction(fireAnimate);
     
     return true;
 }

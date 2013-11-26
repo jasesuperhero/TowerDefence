@@ -101,10 +101,14 @@ CAbstractAttacedUnit& CAbstractAttacedUnit::setAttacedUnit(CAbstractProtectiveUn
 /*
  *  Наносит урон противнику. Возвращает true, если противник погиб от удара и false, если все еще жив
  */
-void CAbstractAttacedUnit::makeDamageTo()
+bool CAbstractAttacedUnit::makeDamageTo()
 {
-    if (getPosition().getDistance(_attacedUnit->getPosition()) < _damageRadius) {
-        if(_attacedUnit->getDemaged(_maxDamage))
+    if (_attacedUnit && getPosition().getDistance(_attacedUnit->getPosition()) < _damageRadius) {
+        if(_attacedUnit->getDemaged(_maxDamage)) {
             printf("Unit %s was killed by %s", _attacedUnit->getName(), this->getName());
+            //setAttacedUnit(NULL);
+            return true;
+        }
     } else setAttacedUnit(NULL);
+    return false;
 }

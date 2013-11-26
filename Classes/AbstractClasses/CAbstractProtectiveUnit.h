@@ -9,10 +9,14 @@
 #ifndef __HelloCpp__CAbstractProtectiveUnit__
 #define __HelloCpp__CAbstractProtectiveUnit__
 
+//class CLandscape;
+
 // Библиотеки
 #include <cocos2d.h>
 // Кастомные
 #include "CAbstractUnit.h"
+
+class CLandscape;
 
 class CAbstractProtectiveUnit : public CAbstractUnit
 {
@@ -21,11 +25,11 @@ protected:
     int _maxHealth;
     bool _alive;
     
+    // Графика
     Animation* _deadAnimation;
     
-private:
-    /** SET методы */
-    CAbstractProtectiveUnit& setAlive(bool new_alive);
+    /** Дополнительные методы */
+    void killEnemy();
     
 public:
     /** Конструкторы */
@@ -40,6 +44,7 @@ public:
     /** SET методы */
     CAbstractProtectiveUnit& setHealth(int new_health);
     CAbstractProtectiveUnit& setMaxHealth(int new_max_health);
+    CAbstractProtectiveUnit& setAlive(bool new_alive);
     CAbstractProtectiveUnit& setDeadAnimation(Animation* new_dead_animation);
     
     /** Дополнительные методы */

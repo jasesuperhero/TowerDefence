@@ -9,6 +9,8 @@
 #ifndef __HelloCpp__CAbstractAttacedUnit__
 #define __HelloCpp__CAbstractAttacedUnit__
 
+//class CLandscape;
+
 // Библиотеки
 #include <cocos2d.h>
 // Кастомные
@@ -40,7 +42,7 @@ public:
     CAbstractAttacedUnit& setAttacedUnit(CAbstractProtectiveUnit* new_attaced_unit);
     
     /** Дополнительные методы */
-    void makeDamageTo();
+    bool makeDamageTo();
 };
 
 #endif /* defined(__HelloCpp__CAbstractAttacedUnit__) */

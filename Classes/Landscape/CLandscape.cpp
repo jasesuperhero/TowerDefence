@@ -7,6 +7,7 @@
 //
 
 #include "CLandscape.h"
+#include "CLightEnemy.h"
 
 // Направления движений юнита
 const Point dir[8] = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}, {1, 0}, {0, 1}, {-1, 0}, {0, -1}};
@@ -50,8 +51,63 @@ TMXLayer& CLandscape::getWallsPlaces()
     return *_wallsPlaces;
 }
 
+/*
+ *  Возвращает координаты замка
+ */
+Point CLandscape::getCastleCoord()
+{
+    TMXObjectGroup* castlePlace = getObjectGroup("Castle");
+    Point castleCoord = Point(castlePlace->getObject("CastleCoord")->valueForKey("x")->intValue() + 16,
+                              castlePlace->getObject("CastleCoord")->valueForKey("y")->intValue() + 16);
+    castleCoord.x = trunc(castleCoord.x / this->getTileSize().width); castleCoord.y = trunc(castleCoord.y / this->getTileSize().width) - 1;
+    return castleCoord;
+}
+
 #pragma mark - Дополнительные методы
 #pragma mark - PRIVAT
+
+/*
+ *  Устанавливает значения свободных и занятых мета-клеток
+ */
+void CLandscape::getMetaTiles()
+{
+    TMXMapInfo* mapInfo = TMXMapInfo::create("TileMap.tmx");
+    Object* object;
+    CCARRAY_FOREACH(mapInfo->getTilesets(), object);
+    _occupiedTileGid = ((TMXTilesetInfo*)object)->_firstGid;
+    _freeTileGid = _occupiedTileGid + 1;
+}
+
+/*
+ *  Установка замка на карту
+ */
+void CLandscape::placeCastle()
+{
+    CCastle* castle = CCastle::create();
+    TMXObjectGroup* castlePlace = getObjectGroup("Castle");
+    Point castleCoord = Point(castlePlace->getObject("CastleCoord")->valueForKey("x")->intValue() + 16,
+                              castlePlace->getObject("CastleCoord")->valueForKey("y")->intValue() + 16);
+    castle->setPosition(castleCoord);
+    this->addChild(castle);
+    _attacedBuildings.push_back(castle);
+}
+
+/*
+ *  Установка на карту логов врагов
+ */
+void CLandscape::placeLairs()
+{
+    TMXLayer* lairs_places = getLayer("Lairs");
+    
+    for (int i = 0; i < lairs_places->getLayerSize().width; i++)
+        for (int j = 0; j < lairs_places->getLayerSize().height; j++)
+            if (lairs_places->getTileGIDAt(Point(i, j))) {
+                CLair* lair = CLair::createLairWithLandscape(this);
+                lair->setPosition(getPositionWithTiledCoord(Point(i, j)));
+                this->addChild(lair, 100);
+            }
+}
+
 /*
  *  Масштабирование карты по окну
  */
@@ -68,10 +124,6 @@ void CLandscape::scaleMapToWin()
  */
 void CLandscape::update(float dt)
 {
-    //printf("Update Landscape\n");
-    //for (int i = 0; i < _attacedBuildings.size(); i++)
-      //  for (int j = 0; j < _enemies.size(); j++)
-            
 }
 
 #pragma mark - Методы для добалвения новых объектов
@@ -94,14 +146,12 @@ CTower* CLandscape::addTowerToMapWithPosition(Point tileCoord)
 {
     if (_towersPlaces->getTileGIDAt(tileCoord) == _freeTileGid) {
         Size mapSize = this->getMapSize();
-        int tileSize = (this->getTileSize()).width;
         CTower* tower = CTower::createWithArrayOfEnemies(&_enemies);
     
         // Ставим занятость клетки
         _towersPlaces->setTileGID(_occupiedTileGid, tileCoord);
         
-        tower->setPosition((tileCoord.x + 1) * tileSize - tileSize / 2,
-                           (mapSize.height - tileCoord.y) * tileSize - tileSize / 2);
+        tower->setPosition(getPositionWithTiledCoord(tileCoord));
         this->addChild(tower, this->getChildrenCount());
         return tower;
     } else return NULL;
@@ -114,18 +164,28 @@ CWall* CLandscape::addWallToMapWithPosition(Point tileCoord)
 {
     if (_wallsPlaces->getTileGIDAt(tileCoord) == _freeTileGid) {
         Size mapSize = this->getMapSize();
-        int tileSize = (this->getTileSize()).width;
     
         // Ставим занятость клетки
         _wallsPlaces->setTileGID(_occupiedTileGid, tileCoord);
         _road->setTileGID(_occupiedTileGid, tileCoord);
         
         CWall* wall = CWall::create();
-        wall->setPosition((tileCoord.x + 1) * tileSize - tileSize / 2,
-                          (mapSize.height - tileCoord.y) * tileSize - tileSize / 2);
+        wall->setPosition(getPositionWithTiledCoord(tileCoord));
         this->addChild(wall, this->getChildrenCount());
         return wall;
     } else return NULL;
+}
+
+#pragma mark - Удаление объектов
+
+/*
+ *  Удаление объектов
+ */
+void CLandscape::removeEnemy(CAbstractUnit *enemy)
+{
+    vector<CAbstractEnemy*>::const_iterator location = find(_enemies.begin(), _enemies.end(), enemy);
+    if (location != _enemies.end())
+        _enemies.erase(location);
 }
 
 /*
@@ -134,12 +194,11 @@ CWall* CLandscape::addWallToMapWithPosition(Point tileCoord)
 void CLandscape::addEnemyToMapWithPosition(Point tileCoord, CAbstractEnemy* enemy)
 {
     if (_road->getTileGIDAt(tileCoord) == _freeTileGid) {
-        Size mapSize = this->getMapSize();
-        int tileSize = (this->getTileSize()).width;
-        
-        enemy->setPosition((tileCoord.x + 1) * tileSize - tileSize / 2,
-                          (mapSize.height - tileCoord.y) * tileSize - tileSize / 2);
+        enemy->setPosition(getPositionWithTiledCoord(tileCoord));
+        enemy->setAlive(true);
         this->addChild(enemy, this->getChildrenCount());
+        
+        _enemies.push_back(enemy);
     };
 }
 
@@ -153,6 +212,16 @@ Point CLandscape::tileCoordForPosition(Point position)
     int x = (position.x - (this->getBoundingBox()).origin.x) / (this->getTileSize().width * this->getScaleX());
     int y = (this->getMapSize().height * this->getTileSize().height * this->getScaleY() - (position.y - (this->getBoundingBox()).origin.y)) / (this->getTileSize().height * this->getScaleY()) ;
     return Point(x, y);
+}
+
+/*
+ *  Преобразует координаты карты в экранные координаты
+ */
+Point CLandscape::getPositionWithTiledCoord(Point tileCoord)
+{
+    int tile_size = this->getTileSize().width;
+    return Point(tileCoord.x * tile_size + tile_size / 2,
+                 (this->getContentSize().height / 32 - tileCoord.y - 1) * tile_size + tile_size / 2);
 }
 
 /*
@@ -200,7 +269,6 @@ bool CLandscape::init()
     }
     
     // Загрузка карты
-    //*this = TMXTiledMap::create("TileMap.tmx");
     this->initWithTMXFile("TileMap.tmx");
     //_background = this->getLayer("Background");
     _wallsPlaces = this->getLayer("WallsPlaces");
@@ -209,22 +277,8 @@ bool CLandscape::init()
     //_towersPlaces->setVisible(false);
     _road = this->getLayer("Road");
     
-    // Установка замка
-    CCastle* castle = CCastle::create();
-    TMXObjectGroup* castlePlace = getObjectGroup("Castle");
-    Point castleCoord = Point(castlePlace->getObject("CastleCoord")->valueForKey("x")->intValue() + 16,
-                              castlePlace->getObject("CastleCoord")->valueForKey("y")->intValue() + 16);
-    castle->setPosition(castleCoord);
-    this->addChild(castle);
-    _attacedBuildings.push_back(castle);
-    
     // Устнаваливаем значения для занятого и свободного тайла в метаслоях
-    TMXMapInfo* mapInfo = TMXMapInfo::create("TileMap.tmx");
-    Object* object;
-    CCARRAY_FOREACH(mapInfo->getTilesets(), object);
-    _occupiedTileGid = ((TMXTilesetInfo*)object)->_firstGid;
-    _freeTileGid = _occupiedTileGid + 1;
-    
+    getMetaTiles();
     // Масштабирование и выравнивание карты по центру
     scaleMapToWin();
     this->setPosition(((Director::getInstance()->getWinSizeInPixels()).width -
@@ -235,11 +289,17 @@ bool CLandscape::init()
     // Запускаем основной цикл для карты
     this->getScheduler()->scheduleUpdateForTarget(this, 1, false);
     
+    
+    // Установка замка
+    placeCastle();
+    // Установка логов
+    placeLairs();
+    
     //TODO: DEBUG область
-    castleCoord.x = trunc(castleCoord.x / this->getTileSize().width); castleCoord.y = trunc(castleCoord.y / this->getTileSize().width) - 1;
-    CLightEnemy* enemy = CLightEnemy::createEnemyWithRoadAndCastleCoord(getLayer("Road"), castleCoord);
-    addEnemyToMapWithPosition(Point(0, 11), enemy);
-    _enemies.push_back(enemy);
+    //CLightEnemy* enemy = CLightEnemy::createEnemy(this);
+    //addEnemyToMapWithPosition(Point(0, 11), enemy);
+    //enemy->setAlive(true);
+    //_enemies.push_back(enemy);
     
     return true;
 }

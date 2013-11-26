@@ -7,6 +7,7 @@
 //
 
 #include "CAbstractProtectiveUnit.h"
+#include "CLandscape.h"
 
 // Графичиские константы
 const int HealthFramesNumber = 21;
@@ -61,19 +62,6 @@ Animation* CAbstractProtectiveUnit::getDeadAnimation()
 
 #pragma mark - SET методы
 
-#pragma mark - PRIVATE
-
-/*
- *  Устанавливаем значение для alive
- */
-CAbstractProtectiveUnit& CAbstractProtectiveUnit::setAlive(bool new_alive)
-{
-    _alive = new_alive;
-    return *this;
-}
-
-#pragma mark - PUBLIC
-
 /*
  *  Устанавливаем текущий уровень здоровья
  */
@@ -95,6 +83,17 @@ CAbstractProtectiveUnit& CAbstractProtectiveUnit::setMaxHealth(int new_max_healt
 }
 
 /*
+ *  Устанавливаем значение для alive
+ */
+CAbstractProtectiveUnit& CAbstractProtectiveUnit::setAlive(bool new_alive)
+{
+    setVisible(new_alive);
+    _alive = new_alive;
+    return *this;
+}
+
+
+/*
  *  Устанавливает новую анимацию смерти/разрушения
  */
 CAbstractProtectiveUnit& CAbstractProtectiveUnit::setDeadAnimation(Animation *new_dead_animation)
@@ -105,6 +104,17 @@ CAbstractProtectiveUnit& CAbstractProtectiveUnit::setDeadAnimation(Animation *ne
 }
 
 #pragma mark - Дополнительные методы
+#pragma mark - PRIVATE
+
+/*
+ *  Убийство юнита
+ */
+void CAbstractProtectiveUnit::killEnemy()
+{
+    setAlive(false);
+    getLandscape()->removeEnemy(this);
+}
+
 #pragma mark - PUBLIC
 
 /*
@@ -117,13 +127,16 @@ bool CAbstractProtectiveUnit::getDemaged(int damage)
         this->removeChild(_unitHealthSprite);
         _unitHealthSprite = getUnitHealthAnimation()[int(_health * HealthFramesNumber / _maxHealth)];
         this->addChild(_unitHealthSprite);
-        this->_sprite->runAction(TintBy::create(0.5, 0, 255, 255));
+        this->_sprite->runAction(TintBy::create(0.1, 0, 255, 255));
         return false;
     } else {
-        _alive = false;
         this->stopAllActions();
         this->_sprite->stopAllActions();
-        this->_sprite->runAction(Animate::create(_deadAnimation));
+        FiniteTimeAction* sequence = Sequence::create(Animate::create(_deadAnimation),
+                                                      CallFunc::create(this, callfunc_selector(CAbstractProtectiveUnit::killEnemy)),
+                                                      NULL);
+        sequence->retain();
+        this->_sprite->runAction(sequence);
         return true;
     }
 }

@@ -18,16 +18,9 @@
  </tileset>
  <layer name="Background" width="35" height="24">
   <data encoding="base64" compression="zlib">
-   eJzt1csKwjAQBdCqoPVZHwsfi2AFSxXUfJL//xXeQAJDcJIUNEbI4tBFMs1NOm1FURQiY8kE1lFjbeR9t45MTeRzab5zLs98LnH6RVhjPejDwDF/CCOtDKyx1zH2cGAyj2ECU7IHupc7LKDSllaNfFPnOvsaTmRv1ArWsGHGlTnJMgusKZksN52lSkSdQAaaZetBe9I311e7Y57RWT8j7p0z7D7ugta63i3Tu75vAe1J2RGtda1xgWtAll84Boh1H/WPeHiuIVk+dZ8s+ycvf9Ndng==
+   eJztldkKAiEUhm2f1mmBtgtpggYLKh+p93+KjqBwElcoMfDiY2COv/5nmZESQmjBCs/gHBFjifNmDk9t4rq0v6nLq9QlzbxQLdYBukDPsX4IjCRVoEY/R3EAjhbPY2ACTFEOOJcHsABqyVLTcIPOVfsGOKPcMCtgDWwsccEceZkFaiqLl7v0UmdCk4EH7GVnYCDjffI5k6a1LnTt3tKji+yRKabmUp9JFgnWur4tNbs+L3gmeSRY6/JyBW4BXlL+AxUnxBb1F7+P3ceGbw9xRzw9zxAv39qnUPgn3uMQXLE=
   </data>
  </layer>
- <objectgroup name="Lairs" width="35" height="24">
-  <object name="Lair" x="0" y="352" width="32" height="32">
-   <properties>
-    <property name="Pleaceable" value="true"/>
-   </properties>
-  </object>
- </objectgroup>
  <layer name="TowersPlaces" width="35" height="24">
   <properties>
    <property name="Placeable" value="True"/>
@@ -51,10 +44,15 @@
  </layer>
  <layer name="Road" width="35" height="24">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjIJRMFKBEQ6MT45UTKxZhNxHTb+OglEwCkbBKBgFuAAAkg0Hnw==
+   eJxjYBgFo2AUjIJRMFKBEQ6MT45UTKxZhNxHTb9SYsZgAaNuwQ4Gk1tGwSgYBUMTAACOmQhn
   </data>
  </layer>
  <objectgroup name="Castle" width="35" height="24">
   <object name="CastleCoord" x="1056" y="352" width="32" height="32"/>
  </objectgroup>
+ <layer name="Lairs" width="35" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzt0jENAAAIBLHXhH9xiICEgVbBDZcA8FVdB8AyTwNTDUbGAGU=
+  </data>
+ </layer>
 </map>
