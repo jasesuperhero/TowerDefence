@@ -9,10 +9,9 @@
 #ifndef __HelloCpp__CAbstractAttacedUnit__
 #define __HelloCpp__CAbstractAttacedUnit__
 
-//class CLandscape;
+// Константы
+#define ATTACK_TAG 111
 
-// Библиотеки
-#include <cocos2d.h>
 // Кастомные
 #include "CAbstractProtectiveUnit.h"
 
@@ -43,6 +42,10 @@ public:
     
     /** Дополнительные методы */
     bool makeDamageTo();
+    bool canAttack();
+    void attack();
+    virtual void attackAnimation() = 0;
+    virtual void isKillEnemy();
 };
 
 #endif /* defined(__HelloCpp__CAbstractAttacedUnit__) */

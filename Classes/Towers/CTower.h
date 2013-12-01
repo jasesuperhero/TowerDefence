@@ -9,10 +9,10 @@
 #ifndef __HelloCpp__CTower__
 #define __HelloCpp__CTower__
 
-// Библиотеки
-#include <cocos2d.h>
 // Кастомные
 #include "CAbstractEnemy.h"
+
+class CLandscape;
 
 class CTower : public CAbstractAttacedUnit
 {
@@ -30,8 +30,6 @@ private:
     /** Дополнительные методы */
     void levelUp();
     void addExperience(int exp);
-    void fire();
-    void isKillEnemy();
     virtual void update(float dt);
     
 public:
@@ -50,10 +48,12 @@ public:
     
     /** Перегрузка методов */
     virtual void draw();
+    virtual void attackAnimation();
+    virtual void isKillEnemy();
     
     /** Инициализация */
     virtual bool init();
-    static CTower* createWithArrayOfEnemies(vector<CAbstractEnemy*>* enemies);
+    static CTower* createTower(CLandscape* landscape);
     
     /** Пользовательский ввод */
     bool onTouchBegan(Touch *touch, Event *event);

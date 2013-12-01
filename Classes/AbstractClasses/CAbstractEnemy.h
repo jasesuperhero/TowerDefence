@@ -9,13 +9,17 @@
 #ifndef __HelloCpp__CAbstractEnemy__
 #define __HelloCpp__CAbstractEnemy__
 
-//class CLandscape;
+// Константы
+#define MOVING_TAG 222
+#define MOVING_ANIMATION_TAG 333
 
-// Библиотеки
-#include <cocos2d.h>
 // Кастомные
 #include "CAbstractAttacedUnit.h"
 #include "CRoad.h"
+
+class CWall;
+
+class CLandscape;
 
 class CAbstractEnemy : public CAbstractAttacedUnit
 {
@@ -25,11 +29,16 @@ protected:
     CRoad* _road;
     int _exp;
     
+    vector<CWall*>* _walls;
+    
     /** Графические поля */
     RepeatForever* _moveUp;
     RepeatForever* _moveDown;
     RepeatForever* _moveLeft;
     RepeatForever* _moveRight;
+    
+    /** Дополнительные методы */
+    virtual void update(float dt);
     
 public:
     /** Конструкторы */
@@ -40,6 +49,7 @@ public:
     bool getInMoving();
     CRoad* getRoad();
     int getExp();
+    vector<CWall*> *getWalls();
     
     RepeatForever* getMoveUpAction();
     RepeatForever* getMoveDownAction();
@@ -51,14 +61,21 @@ public:
     CAbstractEnemy& setInMoving(bool new_in_moving);
     CAbstractEnemy& setRoad(CRoad* new_road);
     CAbstractEnemy& setExp(int new_exp);
+    CAbstractEnemy& setWalls(vector<CWall*>* new_walls);
     
     CAbstractEnemy& setMoveUpAction(RepeatForever* new_move_up);
     CAbstractEnemy& setMoveDownAction(RepeatForever* new_move_down);
     CAbstractEnemy& setMoveLeftAction(RepeatForever* new_move_left);
     CAbstractEnemy& setMoveRightAction(RepeatForever* new_move_right);
     
+    /** Переружаемые методы */
+    virtual void isKillEnemy();
+    
     /** Дополнительные методы */
     void makeMove();
+    
+    /** Инициализация */
+    virtual bool init();
 };
 
 #endif /* defined(__HelloCpp__CAbstractEnemy__) */

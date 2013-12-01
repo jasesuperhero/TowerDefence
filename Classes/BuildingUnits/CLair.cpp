@@ -123,6 +123,7 @@ bool CLair::init()
         return false;
     }
     
+    getUnitHealthSprite()->setVisible(false);
     setSpriteWithRect("lair.png", Rect(0, 0, 32, 56));
     // Анимация
     _makeEnemyAnimate = createAnimate("lair.png", Rect(0, 0, 32, 56), 9, 0.1);
@@ -180,11 +181,13 @@ void CLair::spawnUnit()
         printf("Spawn %s\n", enemy->getName());
         _enemies.pop_back();
         getLandscape()->addEnemyToMapWithPosition(getTiledCoord(), enemy);
-        FiniteTimeAction* makeUnit = Sequence::create(DelayTime::create(rand() % 3 + CCRANDOM_0_1()),
-                                                      _makeEnemyAnimate,
-                                                      CallFunc::create(this, callfunc_selector(CLair::spawnUnit)),
-                                                      NULL);
-        makeUnit->retain();
-        this->_sprite->runAction(makeUnit);
+        if (!_enemies.empty()) {
+            FiniteTimeAction* makeUnit = Sequence::create(DelayTime::create(rand() % 3 + CCRANDOM_0_1()),
+                                                          _makeEnemyAnimate,
+                                                          CallFunc::create(this, callfunc_selector(CLair::spawnUnit)),
+                                                          NULL);
+            makeUnit->retain();
+            this->_sprite->runAction(makeUnit);
+        }
     }
 }

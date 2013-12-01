@@ -60,17 +60,17 @@ CLandscape* CAbstractUnit::getLandscape()
 /*
  *  Возвращает имя объекта
  */
-Sprite& CAbstractUnit::getSprite()
+Sprite* CAbstractUnit::getSprite()
 {
-    return *(this->_sprite);
+    return _sprite;
 }
 
 /*
  *  Возвращает спрайт слоя здоровья
  */
-Sprite& CAbstractUnit::getUnitHealthSprite()
+Sprite* CAbstractUnit::getUnitHealthSprite()
 {
-    return *_unitHealthSprite;
+    return _unitHealthSprite;
 }
 
 /*
@@ -138,12 +138,14 @@ CAbstractUnit& CAbstractUnit::setSpriteWithRect(const char *sprite_filename, coc
  */
 bool CAbstractUnit::isClicked(cocos2d::Touch *touch)
 {
-    Point touchCoord = touch->getLocation() - this->getParent()->getBoundingBox().origin;
-    touchCoord = this->getParent()->convertToNodeSpace(touchCoord);
-    Rect spriteRect = this->getBoundingBox();
-    spriteRect.origin.x -= spriteRect.size.width / 2;
-    spriteRect.origin.y -= spriteRect.size.height / 2;
-    return (spriteRect.containsPoint(touchCoord));
+    if (this->getParent()) {
+        Point touchCoord = touch->getLocation() - this->getParent()->getBoundingBox().origin;
+        touchCoord = this->getParent()->convertToNodeSpace(touchCoord);
+        Rect spriteRect = this->getBoundingBox();
+        spriteRect.origin.x -= spriteRect.size.width / 2;
+        spriteRect.origin.y -= spriteRect.size.height / 2;
+        return (spriteRect.containsPoint(touchCoord));
+    } else return false;
 }
 
 #pragma mark - PUBLIC
@@ -211,11 +213,11 @@ bool CAbstractUnit::init()
     this->addChild(_unitHealthSprite, -1);
     
     // Отлавливание касания экрана
-    /*auto listener = EventListenerTouch::create(Touch::DispatchMode::ONE_BY_ONE);
+    auto listener = EventListenerTouch::create(Touch::DispatchMode::ONE_BY_ONE);
     listener->setSwallowTouches(true);
     listener->onTouchBegan = CC_CALLBACK_2(CAbstractUnit::onTouchBegan, this);
     EventDispatcher::getInstance()->addEventListenerWithSceneGraphPriority(listener, this);
-    this->setTouchEnabled(true);*/
+    this->setTouchEnabled(true);
     
     return true;
 }

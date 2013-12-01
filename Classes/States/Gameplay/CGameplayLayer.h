@@ -23,17 +23,12 @@ class CGameplayLayer : public Layer {
 private:
     CLandscape* _landscape;
     
-    std::vector<CAbstractUnit*> _buildingsVector;
-    //std::vector<CEnemies*> _enemiesVector;
-    
 public:
     /** Методы создания и инициализации */
-    static Layer* createLayer();
     virtual bool init();
 
     /** Пользовательский ввод */
     bool onTouchBegan(Touch *touch, Event *event);
-    void onTouchEnded(Touch *touch, Event *event);
     
     // Метод create создается вручную (COCOS2D-X)
     CREATE_FUNC(CGameplayLayer);

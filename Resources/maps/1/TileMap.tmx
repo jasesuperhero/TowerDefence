@@ -7,7 +7,7 @@
   <image source="meta_tiles.png" width="67" height="34"/>
   <tile id="0">
    <properties>
-    <property name="Collidable" value="True"/>
+    <property name="Collidable" value="False"/>
    </properties>
   </tile>
   <tile id="1">
@@ -18,7 +18,7 @@
  </tileset>
  <layer name="Background" width="35" height="24">
   <data encoding="base64" compression="zlib">
-   eJztldkKAiEUhm2f1mmBtgtpggYLKh+p93+KjqBwElcoMfDiY2COv/5nmZESQmjBCs/gHBFjifNmDk9t4rq0v6nLq9QlzbxQLdYBukDPsX4IjCRVoEY/R3EAjhbPY2ACTFEOOJcHsABqyVLTcIPOVfsGOKPcMCtgDWwsccEceZkFaiqLl7v0UmdCk4EH7GVnYCDjffI5k6a1LnTt3tKji+yRKabmUp9JFgnWur4tNbs+L3gmeSRY6/JyBW4BXlL+AxUnxBb1F7+P3ceGbw9xRzw9zxAv39qnUPgn3uMQXLE=
+   eJzt1dsKwjAMANB6nfd5AfWp+DT6pP0k//8rTKGDGNKbzKKQh8Ngbdo0yzatlNIiyP7APm7MVD63ieTUVa5L9526PKUudfpFk7ERGINJZP4cNN4iM4buk5PzEqzAGp0Bn+UOdqD19iTGMnE5tW8YB3AEp8C4s0W5bDJjUlrBujBmfmyq3nuSmxtTGsv1UN+XtCdNIRz76fuPc8E9aQvh2CFyqfkN7N2Qs39+V3K/dJ2Q1BruH/FIXHNyGWodIf7JCymjW38=
   </data>
  </layer>
  <layer name="TowersPlaces" width="35" height="24">
@@ -48,7 +48,7 @@
   </data>
  </layer>
  <objectgroup name="Castle" width="35" height="24">
-  <object name="CastleCoord" x="1056" y="352" width="32" height="32"/>
+  <object name="CastleCoord" x="1088" y="352" width="32" height="32"/>
  </objectgroup>
  <layer name="Lairs" width="35" height="24">
   <data encoding="base64" compression="zlib">

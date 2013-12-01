@@ -3,6 +3,68 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "CCastle::placeTowers():CCastle.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "castleMap[i][j]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "CLandscape::checkPath(cocos2d::TMXLayer*, std::__1::deque&lt;cocos2d::Point, std::__1::allocator&lt;cocos2d::Point&gt; &gt;*):CLandscape.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "*path">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "CLightEnemy::update(float):CLightEnemy.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "CAbstractEnemy::getRoad():CAbstractEnemy.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "CRoad::setCastleCoord(cocos2d::Point):CRoad.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "CRoad::checkPath():CRoad.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "*_path">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "CLightEnemy::init():CLightEnemy.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "CLandscape::removeUnit(CAbstractUnit*):CLandscape.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "CRoad::findPath(cocos2d::Point):CRoad.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "cocos2d::Node::runAction(cocos2d::Action*):CCNode.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "CAbstractEnemy::makeMove():CAbstractEnemy.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "CLightEnemy::createEnemyWithRoadAndCastleCoord(cocos2d::TMXLayer*, cocos2d::Point):CLightEnemy.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "CAbstractUnit::init():CAbstractUnit.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "*_unitHealthSprite">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "CRoad::setRoad(cocos2d::TMXLayer*):CRoad.cpp">
+      </ContextState>
+      <ContextState
          contextName = "CRoad::init():CRoad.cpp">
       </ContextState>
       <ContextState
@@ -12,9 +74,6 @@
                value = "usedMap[(int)new_p.x][(int)new_p.y]">
             </PersistentString>
          </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "CLightEnemy::update(float):CLightEnemy.cpp">
       </ContextState>
       <ContextState
          contextName = "CLightEnemy::makeMove():CLightEnemy.cpp">
@@ -28,52 +87,7 @@
          contextName = "CRoad::dfs(cocos2d::Point, std::__1::vector&lt;cocos2d::Point, std::__1::allocator&lt;cocos2d::Point&gt; &gt;*):CRoad.cpp">
       </ContextState>
       <ContextState
-         contextName = "CRoad::setCastleCoord(cocos2d::Point):CRoad.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "CLightEnemy::init():CLightEnemy.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "CLandscape::checkPath(cocos2d::TMXLayer*, std::__1::deque&lt;cocos2d::Point, std::__1::allocator&lt;cocos2d::Point&gt; &gt;*):CLandscape.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "*path">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "CLandscape::dfs(cocos2d::Point, std::__1::vector&lt;cocos2d::Point, std::__1::allocator&lt;cocos2d::Point&gt; &gt;*, int (*) [1000]):CLandscape.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "CAbstractEnemy::getRoad():CAbstractEnemy.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "CLightEnemy::createEnemyWithRoadAndCastleCoord(cocos2d::TMXLayer*, cocos2d::Point):CLightEnemy.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "cocos2d::Node::runAction(cocos2d::Action*):CCNode.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "CRoad::checkPath():CRoad.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "*_path">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "CRoad::findPath(cocos2d::Point):CRoad.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "CAbstractUnit::init():CAbstractUnit.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "*_unitHealthSprite">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "CRoad::setRoad(cocos2d::TMXLayer*):CRoad.cpp">
       </ContextState>
       <ContextState
          contextName = "CLandscape::findPath(cocos2d::TMXLayer*, cocos2d::Point):CLandscape.cpp">

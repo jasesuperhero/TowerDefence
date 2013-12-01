@@ -8,12 +8,14 @@
 
 #include "CTower.h"
 #include "CFire.h"
+#include "CLandscape.h"
 
 // Характеристики башни
 #define STANDART_DAMAGE 1000
 #define STANDART_RATE 1
 #define STANDART_HEALTH 10000
 #define STANDART_DAMAGE_RADIUS 150
+#define STANDART_COST 300
 #define STANDART_NAME (char*)"Tower"
 #define STANDART_MAXLEVEL 3
 
@@ -97,11 +99,44 @@ void CTower::draw()
 {
     // отрисовка радиуса атаки башни
     glLineWidth(2);
-    DrawPrimitives::setDrawColor4B(0, 178, 0, 70);
+    DrawPrimitives::setDrawColor4B(0, 178, 0, 30);
     DrawPrimitives::drawSolidCircle(Point(0, 0), getDamageRadius(), CC_DEGREES_TO_RADIANS(90), 50);
     CHECK_GL_ERROR_DEBUG();
 }
 
+/*
+ *  Анимация и экшн атаки
+ */
+void CTower::attackAnimation()
+{
+    int angle = floor(CC_RADIANS_TO_DEGREES(atan2l(getAttacedUnit()->getPositionX() - getPositionX(),
+    getAttacedUnit()->getPositionY() - getPositionY())) / 22.5) + 8;
+    angle = floor((float)angle / 2);
+    this->removeChild(getSprite());
+    _sprite = _towerAnimation[_level][angle];
+    this->addChild(getSprite());
+    
+    CFire* fire = CFire::create();
+    fire->cocos2d::Node::setPosition(this->getPosition());
+    FiniteTimeAction* sequence = Sequence::create(MoveTo::create(0.3, getAttacedUnit()->getPosition()),
+                                                  CallFunc::create(this, callfunc_selector(CTower::isKillEnemy)),
+                                                  CallFunc::create(fire, callfunc_selector(Node::removeFromParent)),
+                                                  NULL);
+    this->getParent()->addChild(fire, 1);
+    fire->runAction(sequence);
+}
+
+/*
+ *  Убит ли атакуемый юнит
+ */
+void CTower::isKillEnemy()
+{
+    CAbstractEnemy* enemy = dynamic_cast<CAbstractEnemy*>(getAttacedUnit());
+    if (makeDamageTo()) {
+        addExperience(enemy->getExp());
+        getLandscape()->getCastle()->addMoney(getAttacedUnit()->getCost());
+    }
+}
 
 #pragma mark - Инициализация
 
@@ -122,6 +157,7 @@ bool CTower::init()
     setMaxDamage(STANDART_DAMAGE);
     setDamageRadius(STANDART_DAMAGE_RADIUS);
     setRate(STANDART_RATE);
+    setCost(STANDART_COST);
     
     // Настройка спрайта
     setSpriteWithRect("turret1.png", Rect(0, 0, 32, 32));
@@ -164,9 +200,10 @@ bool CTower::onTouchBegan(Touch *touch, Event *event)
  */
 void CTower::levelUp()
 {
-    if (_level + 1 < STANDART_MAXLEVEL)
+    if (_level + 1 < STANDART_MAXLEVEL) {
         _level++;
-    _experience = 0;
+        _experience = 0;
+    }
 }
 
 /*
@@ -179,55 +216,16 @@ void CTower::addExperience(int exp)
 }
 
 /*
- *  Метод для выстрела пушки и обновления ее спрайта
- */
-void CTower::fire()
-{
-    if (getAttacedUnit() && getAttacedUnit()->getAlive() &&
-        getPosition().getDistance(getAttacedUnit()->getPosition()) < getDamageRadius()) {
-        int angle = floor(CC_RADIANS_TO_DEGREES(atan2l(getAttacedUnit()->getPositionX() - getPositionX(),
-                                                   getAttacedUnit()->getPositionY() - getPositionY())) / 22.5) + 8;
-        angle = floor((float)angle / 2);
-        this->removeChild(_sprite);
-        _sprite = _towerAnimation[_level][angle];
-        this->addChild(_sprite);
-    
-        CFire* fire = CFire::create();
-        fire->cocos2d::Node::setPosition(this->getPosition());
-        FiniteTimeAction* sequence = Sequence::create(MoveTo::create(0.3, getAttacedUnit()->getPosition()),
-                                                      CallFunc::create(this, callfunc_selector(CTower::isKillEnemy)),
-                                                      CallFunc::create(fire, callfunc_selector(Node::removeFromParent)),
-                                                      NULL);
-        this->getParent()->addChild(fire, 1);
-        fire->runAction(sequence);
-    
-        sequence = Sequence::create(DelayTime::create(getRate()),
-                                    CallFunc::create(this, callfunc_selector(CTower::fire)),
-                                    NULL);
-        sequence->retain();
-        this->runAction(sequence);
-    } else setAttacedUnit(NULL);
-}
-
-/*
- *  Убит ли атакуемый юнит
- */
-void CTower::isKillEnemy()
-{
-    CAbstractEnemy* enemy = dynamic_cast<CAbstractEnemy*>(getAttacedUnit());
-    if (makeDamageTo()) addExperience(enemy->getExp());
-}
-
-/*
  *  Обновление объекта со временем
  */
 void CTower::update(float dt)
 {
+    // Атака, либо поиск атакуемого юнита
     if (!getAttacedUnit())
         for (int i = 0; i < _enemiesArray->size(); i++)
             if (getPosition().getDistance((*_enemiesArray)[i]->getPosition()) < getDamageRadius()) {
                 setAttacedUnit((*_enemiesArray)[i]);
-                fire();
+                attack();
                 return;
             }
 }
@@ -236,9 +234,10 @@ void CTower::update(float dt)
 /*
  *  Создание юнита с указателем на вектор всех юнитов на карте
  */
-CTower* CTower::createWithArrayOfEnemies(vector<CAbstractEnemy*> *enemies)
+CTower* CTower::createTower(CLandscape *landscape)
 {
     CTower* tower = create();
-    tower->setEnemiesArray(enemies);
+    tower->setLandscape(landscape);
+    tower->setEnemiesArray(landscape->getEnemies());
     return tower;
 }

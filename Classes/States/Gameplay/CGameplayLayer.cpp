@@ -13,16 +13,6 @@ USING_NS_CC;
 #pragma mark - Инициализация
 
 /*
- *  Создание сцены с объектами
- */
-Layer* CGameplayLayer::createLayer()
-{
-    auto layer = CGameplayLayer::create();
-    
-    return layer;
-}
-
-/*
  *  Инициализация объекта
  */
 bool CGameplayLayer::init()
@@ -56,21 +46,11 @@ bool CGameplayLayer::onTouchBegan(Touch *touch, Event *event)
     Point tileCoord = _landscape->tileCoordForPosition(touch->getLocation());
     if (_landscape->isClickedTowerPlace(tileCoord)) {
         _landscape->addTowerToMapWithPosition(tileCoord);
-        //_towersPlaces->removeTileAt(tileCoord);
+        return true;
     }
     if (_landscape->isClickedWallPlace(tileCoord)) {
         _landscape->addWallToMapWithPosition(tileCoord);
-        //_wallsPlaces->removeTileAt(tileCoord);
+        return true;
     }
     return false;
-}
-
-/*
- *  Делегированный метод для обработки конца касания экрана
- */
-void CGameplayLayer::onTouchEnded(Touch *touch, Event *event)
-{
-    Point touchLocation = touch->getLocationInView();
-    touchLocation = Director::getInstance()->convertToGL(touchLocation);
-    touchLocation = this->convertToNodeSpace(touchLocation);
 }

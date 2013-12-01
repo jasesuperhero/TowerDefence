@@ -26,7 +26,8 @@ private:
     vector<Point>* _path;
     
     /** Внутренние методы объекта */
-    vector<Point>* lee(Point startPoint);
+    vector<Point>* findPathWithoutBlock(Point startPoint);
+    vector<Point>* findPathWithBlock(Point startPoint);
     
 public:
     /** Конструкторы */

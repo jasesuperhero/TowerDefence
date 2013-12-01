@@ -44,8 +44,8 @@ public:
     /** GET методы */
     char* getName();
     CLandscape* getLandscape();
-    Sprite& getSprite();
-    Sprite& getUnitHealthSprite();
+    Sprite* getSprite();
+    Sprite* getUnitHealthSprite();
     vector<Sprite*> getUnitHealthAnimation();
     
     /** SET методы */

@@ -7,6 +7,8 @@
 //
 
 #include "CAbstractEnemy.h"
+#include "CWall.h"
+#include "CLandscape.h"
 
 #pragma mark - Конструкторы
 
@@ -55,6 +57,14 @@ int CAbstractEnemy::getExp()
 }
 
 /*
+ *  Возвращает указатель на массив стен
+ */
+vector<CWall*>* CAbstractEnemy::getWalls()
+{
+    return _walls;
+}
+
+/*
  *  Возвращает action прозода вверх по карте
  */
 RepeatForever* CAbstractEnemy::getMoveUpAction()
@@ -85,7 +95,6 @@ RepeatForever* CAbstractEnemy::getMoveRightAction()
 {
     return _moveRight;
 }
-
 
 #pragma mark - SET методы
 
@@ -130,6 +139,16 @@ CAbstractEnemy& CAbstractEnemy::setExp(int new_exp)
 }
 
 /*
+ *  Установка нового указатели на массив дороги
+ */
+CAbstractEnemy& CAbstractEnemy::setWalls(vector<CWall*> *new_walls)
+{
+    if (new_walls == NULL) throw "New walls ptr is NULL";
+    _walls = new_walls;
+    return *this;
+}
+
+/*
  *  Устанавливает action для движение вверх
  */
 CAbstractEnemy& CAbstractEnemy::setMoveUpAction(RepeatForever *new_move_up)
@@ -169,7 +188,59 @@ CAbstractEnemy& CAbstractEnemy::setMoveRightAction(RepeatForever *new_move_right
     return *this;
 }
 
+#pragma mark - Перегруженные методы
+
+/*
+ *  Убит ли атакуемый юнит
+ */
+void CAbstractEnemy::isKillEnemy()
+{
+    makeDamageTo();
+}
+
 #pragma mark - Дополнительные методы
+#pragma mark - PRIVATE
+
+/*
+ *  Обновление объекта со временем
+ */
+void CAbstractEnemy::update(float dt)
+{
+    setZOrder(getLandscape()->getContentSize().height - getPositionY());
+    
+    if (getAlive()) {
+        // Если дошли до площади замка, то просто исчезаем и наносим мнимый урон замку
+        if (getTiledCoord().x == getRoad()->getCastleCoord().x &&
+            getTiledCoord().y == getRoad()->getCastleCoord().y) {
+            
+            // TODO: урон замку
+            
+            return;
+        }
+        
+        // Поиск маршрута
+        if (!getRoad()->getPath() || !getRoad()->checkPath())
+            if (!this->getActionByTag(MOVING_TAG) || (this->getActionByTag(MOVING_TAG) && this->getActionByTag(MOVING_TAG)->isDone())) {
+                getRoad()->findPath(getTiledCoord());
+                this->stopActionByTag(MOVING_TAG);
+                this->getSprite()->stopActionByTag(MOVING_ANIMATION_TAG);
+                makeMove();
+            }
+        
+        // Атака помехи или замка
+        if (!getAttacedUnit() || !getAttacedUnit()->getAlive()) {
+            vector<CWall*>* wallsArray = getWalls();
+            for (int i = 0; i < getWalls()->size(); i++)
+                if (getPosition().getDistance((*wallsArray)[i]->getPosition()) < getDamageRadius()) {
+                    setAttacedUnit((*wallsArray)[i]);
+                    attack();
+                    return;
+                }
+        }
+    }
+}
+
+#pragma mark - PUBLIC
 
 /*
  *  Передвижение
@@ -179,16 +250,17 @@ void CAbstractEnemy::makeMove()
     CRoad* road = getRoad();
     if (road->checkPath() && getAlive()) {
         Point dir_point = getPositionWithTiledCoord((*road->getPath())[road->getPath()->size() - 1]);
-        printf("Next position for unit is X = %f Y = %f \n", dir_point.x, dir_point.y);
+        //printf("Next position for unit is X = %f Y = %f \n", dir_point.x, dir_point.y);
         road->getPath()->pop_back();
         
-        FiniteTimeAction* sequence = Sequence::create(MoveTo::create(1 / getMoveSpeed(), dir_point),
-                                                      CallFunc::create(this, callfunc_selector(CAbstractEnemy::makeMove)),
-                                                      NULL);
-        sequence->retain();
-        this->runAction(sequence);
+        FiniteTimeAction* move = Sequence::create(MoveTo::create(1 * (getPosition().getDistance(dir_point) / 32) / getMoveSpeed(), dir_point),
+                                                  CallFunc::create(this, callfunc_selector(CAbstractEnemy::makeMove)),
+                                                  NULL);
+        move->setTag(MOVING_TAG);
+        move->retain();
+        this->runAction(move);
         
-        this->_sprite->stopAllActions();
+        this->_sprite->stopActionByTag(MOVING_ANIMATION_TAG);
         
         if (dir_point.x - getPosition().x > 0)
             this->_sprite->runAction(_moveRight);
@@ -198,8 +270,23 @@ void CAbstractEnemy::makeMove()
             this->_sprite->runAction(_moveUp);
         if (dir_point.y - getPosition().y < 0)
             this->_sprite->runAction(_moveDown);
-        
-        setInMoving(true);
-    } else setInMoving(false);
+    };
 }
 
+#pragma mark - Инициализация
+
+/*
+ *  Метод для инициализации полей класса
+ */
+bool CAbstractEnemy::init()
+{
+    if ( !CAbstractUnit::init() )
+    {
+        return false;
+    }
+    
+    // Запуск основного цикла
+    this->getScheduler()->scheduleUpdateForTarget(this, this->getZOrder(), false);
+    
+    return true;
+}

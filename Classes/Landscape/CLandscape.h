@@ -13,10 +13,10 @@
 #include <cocos2d.h>
 
 // Кастомные
-#include "CCastle.h"
 #include "CTower.h"
 #include "CWall.h"
 #include "CLair.h"
+#include "CCastle.h"
 
 using namespace cocos2d;
 using namespace std;
@@ -32,6 +32,9 @@ private:
     TMXLayer*       _towersPlaces;
     TMXLayer*       _wallsPlaces;
     TMXLayer*       _road;
+    
+    /** Объекты */
+    CCastle* _castle;
     
     // Контейнеры для объектов
     vector<CAbstractAttacedUnit*> _attacedBuildings;
@@ -59,7 +62,11 @@ public:
     /** GET методы */
     TMXLayer& getTowerPlaces();
     TMXLayer& getWallsPlaces();
-    Point getCastleCoord();
+    
+    CCastle* getCastle();
+    vector<CAbstractAttacedUnit*>* getAttacedBuildings();
+    vector<CWall*>* getWalls();
+    vector<CAbstractEnemy*>* getEnemies();
     
     /** Методы для добалвения новых объектов */
     void addToMapWithPosition(Layer* layer, Point tileCoord);
@@ -68,13 +75,16 @@ public:
     void addEnemyToMapWithPosition(Point tileCoord, CAbstractEnemy* enemy);
     
     /** Методы для удаления объектов */
-    void removeEnemy(CAbstractUnit* enemy);
+    void removeUnit(CAbstractUnit* enemy);
     
     /** Методы для определения клетки */
     Point tileCoordForPosition(Point position);
     Point getPositionWithTiledCoord(Point tileCoord);
     bool isClickedTowerPlace(Point position);
     bool isClickedWallPlace(Point position);
+    
+    /** Дополнительные методы */
+    Point getCastleCoord();
     
     /** Методы создания и инициализации */
     virtual bool init();

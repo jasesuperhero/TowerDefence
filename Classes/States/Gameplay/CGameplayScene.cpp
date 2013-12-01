@@ -15,7 +15,7 @@
 Scene* CGameplayScene::createScene()
 {
     auto scene = Scene::create();
-    auto layer = CGameplayLayer::createLayer();
+    auto layer = CGameplayLayer::create();
     
     //CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("TileMap.caf");
     

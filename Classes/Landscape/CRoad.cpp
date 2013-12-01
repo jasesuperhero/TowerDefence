@@ -8,6 +8,9 @@
 
 #include "CRoad.h"
 
+const Point dir[4] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+const int BLANK  = -2;                                          // незанятная ячейка
+
 #pragma mark - Конструкторы
 
 /*
@@ -97,11 +100,7 @@ CRoad& CRoad::setRoad(TMXLayer *new_road)
 
 #pragma mark - Внутренние методы объекта
 
-// Направления движений юнита
-const Point dir[4] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
-const int BLANK  = -2;          // незанятная ячейка
-
-vector<Point>* CRoad::lee(Point startPoint)
+vector<Point>* CRoad::findPathWithoutBlock(Point startPoint)
 {
     int d, x, y;
     bool stop;
@@ -164,6 +163,73 @@ vector<Point>* CRoad::lee(Point startPoint)
     return new_path;
 }
 
+vector<Point>* CRoad::findPathWithBlock(Point startPoint)
+{
+    int d, x, y;
+    bool stop;
+    
+    // Необходимо для поиска TODO: убрать после debug
+    int usedMap[(int)_road->getLayerSize().width][(int)_road->getLayerSize().height];
+    // Создаем метакарту доступности
+    for (int i = 0; i < (int)_road->getLayerSize().width; i++)
+        for (int j = 0; j < (int)_road->getLayerSize().height; j++)
+            usedMap[i][j] = BLANK;
+    
+    // распространение волны
+    d = 0;
+    usedMap[(int)startPoint.x][(int)startPoint.y] = 0;
+    do {
+        stop = true;
+        for ( x = 0; x < _road->getLayerSize().width; ++x )
+            for ( y = 0; y < _road->getLayerSize().height; ++y )
+                if ( usedMap[x][y] == d )
+                {
+                    for (int k = 0; k < 4; ++k ) {
+                        Point new_point = Point(x + (int)dir[k].x, y + (int)dir[k].y);
+                        if ( Rect(0, 0, _road->getLayerSize().width - 1, _road->getLayerSize().height - 1).containsPoint(new_point) &&
+                            usedMap[(int)new_point.x][(int)new_point.y] == BLANK &&
+                            (_road->getTileGIDAt(new_point) == _freeTileGid || _road->getTileGIDAt(new_point) == _occupiedTileGid))
+                        {
+                            stop = false;
+                            usedMap[(int)new_point.x][(int)new_point.y] = d + 1;
+                        }
+                    }
+                }
+        d++;
+    } while ( !stop && usedMap[(int)_castleCoord.x][(int)_castleCoord.y] == BLANK );
+    
+    // восстановление пути
+    int len = usedMap[(int)_castleCoord.x][(int)_castleCoord.y];
+    x = (int)_castleCoord.x;
+    y = (int)_castleCoord.y;
+    d = len;
+    
+    vector<Point>* path = new vector<Point>;
+    
+    Point p = Point(x, y);
+    while ( d > 0 )
+    {
+        path->push_back(p);
+        d--;
+        for (int k = 0; k < 4; ++k)
+            if (usedMap[int(p.x + dir[k].x)][int(p.y + dir[k].y)] == d)
+            {
+                p.x += dir[k].x;
+                p.y += dir[k].y;
+                
+                break;
+            }
+    }
+    
+    reverse(path->begin(), path->end());
+    for (int i = 0; i < path->size(); i++)
+        if (_road->getTileGIDAt((*path)[i]) == _occupiedTileGid)
+            path->erase(path->begin() + i, path->end());
+    reverse(path->begin(), path->end());
+    
+    return path;
+}
+
 #pragma mark - Дополнительные методы
 
 /*
@@ -171,16 +237,11 @@ vector<Point>* CRoad::lee(Point startPoint)
  */
 bool CRoad::findPath(Point startPoint)
 {
-    // TODO: написать поиск кратчайшего маршрута
+    vector<Point>* new_path = findPathWithoutBlock(startPoint);
+    if (!new_path || new_path->empty())
+        new_path = findPathWithBlock(startPoint);
     
-    printf("Find new path! \n");
-    
-    //dfs(startPoint, new_path);
-    vector<Point>* new_path = lee(startPoint);
-    //for (int i = 0; i < new_path->size(); i++)
-        //new_deque_path->push_back((*new_path)[i]);
-    
-    if (!new_path->empty()) {
+    if (new_path && !new_path->empty()) {
         delete _path;
         _path = new_path;
         return true;
@@ -194,9 +255,12 @@ bool CRoad::checkPath()
 {
     if (_path->empty())
         return false;
+    
     for (int i = 0; i < _path->size(); i++)
-        if (_road->getTileGIDAt((*_path)[i]) == _occupiedTileGid)
+        if (_road->getTileGIDAt((*_path)[i]) == _occupiedTileGid) {
+            _path->clear();
             return false;
+        }
     return true;
 }
 

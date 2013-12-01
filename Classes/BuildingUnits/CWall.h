@@ -14,6 +14,8 @@
 // Кастомные
 #include "CAbstractProtectiveUnit.h"
 
+class CLandscape;
+
 class CWall : public CAbstractProtectiveUnit
 {
 private:
@@ -38,6 +40,7 @@ public:
     
     /** Инициализация */
     virtual bool init();
+    static CWall* createWall(CLandscape* landscape);
     
     /** Пользовательский ввод */
     bool onTouchBegan(Touch *touch, Event *event);

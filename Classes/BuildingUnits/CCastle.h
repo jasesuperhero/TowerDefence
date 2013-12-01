@@ -12,13 +12,19 @@
 // Библиотеки
 #include <cocos2d.h>
 // Кастомные
-#include "CAbstractAttacedUnit.h"
+#include "CTower.h"
+#include "CWall.h"
 
-class CCastle : public CAbstractAttacedUnit
+class CLandscape;
+
+class CCastle : public CAbstractProtectiveUnit
 {
 private:
     int _money;
-
+    
+    /** Дополнительные методы */
+    virtual void update(float dt);
+    
 public:
     /** Конструкторы */
     CCastle();
@@ -29,8 +35,14 @@ public:
     /** SET методы */
     CCastle& setMoney(int new_money);
     
+    /** Дополнительные методы */
+    bool buyBuilding(int cost);
+    void addMoney(int adding_money);
+    void placeTowers();
+    
     /** Инициализация */
     virtual bool init();
+    static CCastle* createCastle(CLandscape* landscape);
     
     /** Пользовательский ввод */
     bool onTouchBegan(Touch *touch, Event *event);

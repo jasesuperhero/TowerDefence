@@ -93,6 +93,7 @@ CAbstractAttacedUnit& CAbstractAttacedUnit::setDamageRadius(int new_damage_radiu
 CAbstractAttacedUnit& CAbstractAttacedUnit::setAttacedUnit(CAbstractProtectiveUnit *new_attaced_unit)
 {
     _attacedUnit = new_attaced_unit;
+    this->stopActionByTag(ATTACK_TAG);
     return *this;
 }
 
@@ -103,12 +104,44 @@ CAbstractAttacedUnit& CAbstractAttacedUnit::setAttacedUnit(CAbstractProtectiveUn
  */
 bool CAbstractAttacedUnit::makeDamageTo()
 {
-    if (_attacedUnit && getPosition().getDistance(_attacedUnit->getPosition()) < _damageRadius) {
+    if (_attacedUnit && _attacedUnit->getAlive() && canAttack()) {
         if(_attacedUnit->getDemaged(_maxDamage)) {
-            printf("Unit %s was killed by %s", _attacedUnit->getName(), this->getName());
-            //setAttacedUnit(NULL);
+            printf("Unit %s was killed by %s\n", _attacedUnit->getName(), this->getName());
             return true;
         }
     } else setAttacedUnit(NULL);
     return false;
+}
+
+/*
+ *  Проверяет возможность нанесения урона противнику
+ */
+bool CAbstractAttacedUnit::canAttack()
+{
+    if (!_attacedUnit) return false;
+    return getPosition().getDistance(_attacedUnit->getPosition()) < _damageRadius;
+}
+
+/*
+ *  Метод для выстрела пушки и обновления ее спрайта
+ */
+void CAbstractAttacedUnit::attack()
+{
+    if (_attacedUnit && _attacedUnit->getAlive() && canAttack()) {
+        attackAnimation();
+        FiniteTimeAction* sequence = Sequence::create(DelayTime::create(getRate()),
+                                                      CallFunc::create(this, callfunc_selector(CAbstractAttacedUnit::attack)),
+                                                      NULL);
+        sequence->setTag(ATTACK_TAG);
+        sequence->retain();
+        this->runAction(sequence);
+    } else setAttacedUnit(NULL);
+}
+
+/*
+ *  Метод определяющий убийство атакуемого юнита
+ */
+void CAbstractAttacedUnit::isKillEnemy()
+{
+    this->stopActionByTag(ATTACK_TAG);
 }
